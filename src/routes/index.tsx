@@ -46,8 +46,7 @@ function Home() {
               transition={{ duration: 0.5, delay: 0.15 }}
               className="mt-6 max-w-lg text-base text-white/70 sm:text-lg"
             >
-              Miles de referencias entre manijas, bisagras, cerraduras, ménsulas y
-              accesorios. Marcas líderes, asesoramiento real y stock inmediato.
+              Encontrá miles de soluciones para cada proyecto. Productos de calidad, atención personalizada y el respaldo de una empresa familiar con más de 60 años de trayectoria.
             </motion.p>
 
             <motion.div
@@ -145,14 +144,20 @@ function Home() {
             >
               <Link
                 to="/categoria/$slug" params={{ slug: c.slug }}
-                className="group relative flex h-full flex-col overflow-hidden rounded-xl border border-border bg-card p-6 card-hover"
+                className="group relative flex h-full flex-col overflow-hidden rounded-xl border border-white/10 p-6 shadow-xl card-hover"
               >
-                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-[var(--brand)]/10 text-[var(--brand)] transition-colors group-hover:bg-[var(--brand)] group-hover:text-white">
+                <div 
+                  className="absolute inset-0 z-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
+                  style={{ backgroundImage: `url('/categories/${c.slug}.png')` }}
+                />
+                <div className="absolute inset-0 z-0 bg-gradient-to-t from-black/90 via-black/60 to-black/30" />
+                
+                <div className="relative z-10 mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-[var(--brand)]/90 text-white backdrop-blur shadow-sm transition-colors group-hover:bg-[var(--brand)]">
                   <Wrench className="h-5 w-5" />
                 </div>
-                <h3 className="font-display text-lg font-semibold">{c.name}</h3>
-                <p className="mt-1 text-sm text-muted-foreground">{c.description}</p>
-                <span className="mt-auto pt-4 inline-flex items-center gap-1 text-sm font-semibold text-[var(--brand)]">
+                <h3 className="relative z-10 font-display text-lg font-semibold text-white drop-shadow-md">{c.name}</h3>
+                <p className="relative z-10 mt-1 text-sm text-white/90 drop-shadow-md">{c.description}</p>
+                <span className="relative z-10 mt-auto pt-4 inline-flex items-center gap-1 text-sm font-bold text-[var(--brand)] drop-shadow-sm brightness-125">
                   Ver productos
                   <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                 </span>
