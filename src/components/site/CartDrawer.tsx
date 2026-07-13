@@ -3,6 +3,7 @@ import { useCart, formatARS } from "@/context/cart";
 import { Button } from "@/components/ui/button";
 import { Minus, Plus, ShoppingBag, Trash2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Link } from "@tanstack/react-router";
 
 export function CartDrawer() {
   const { isOpen, setOpen, items, remove, updateQty, total, clear } = useCart();
@@ -94,10 +95,10 @@ export function CartDrawer() {
                 {formatARS(total)}
               </span>
             </div>
-            <Button asChild className="h-11 w-full bg-[var(--brand)] text-white hover:bg-[var(--brand)]/90">
-              <a href={`https://wa.me/5493517010095?text=${waMsg}`} target="_blank" rel="noreferrer">
-                Consultar por WhatsApp
-              </a>
+            <Button asChild className="h-11 w-full bg-[var(--brand)] text-white hover:bg-[var(--brand)]/90" onClick={() => setOpen(false)}>
+              <Link to="/checkout">
+                Iniciar Compra
+              </Link>
             </Button>
             <button
               onClick={clear}

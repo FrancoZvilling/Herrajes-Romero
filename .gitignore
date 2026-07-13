@@ -17,6 +17,11 @@ build/
 .output/
 .nitro/
 
+# Env
+.env
+.env.*
+!.env.example
+
 # Vite
 *.local
 
