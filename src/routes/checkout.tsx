@@ -39,6 +39,7 @@ const createPreferenceFn = createServerFn({ method: "POST" })
           },
           auto_return: serverBaseUrl.includes('localhost') ? undefined : "approved",
           external_reference: data.orderId || '0',
+          notification_url: serverBaseUrl.includes('localhost') ? undefined : `${serverBaseUrl}/api/webhook/mercadopago`,
         }
       });
       
