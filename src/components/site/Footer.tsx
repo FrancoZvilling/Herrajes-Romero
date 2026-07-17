@@ -1,9 +1,12 @@
 import { Link } from "@tanstack/react-router";
 import { Facebook, Instagram, MapPin, Phone, Clock, MessageCircle } from "lucide-react";
-import { categories, brands } from "@/data/catalog";
+import { useCategories, useBrands } from "@/hooks/useCatalog";
 import { Logo } from "./Logo";
 
 export function Footer() {
+  const { data: categories = [] } = useCategories();
+  const { data: brands = [] } = useBrands();
+
   return (
     <footer className="mt-24 border-t border-border bg-[var(--ink)] text-white/85">
       <div className="container-x grid gap-10 py-14 md:grid-cols-2 lg:grid-cols-4">

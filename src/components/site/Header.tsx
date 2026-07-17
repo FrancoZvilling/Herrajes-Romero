@@ -3,7 +3,7 @@ import { Menu, Phone, Search, ShoppingBag, X } from "lucide-react";
 import { useState } from "react";
 import { Logo } from "./Logo";
 import { useCart } from "@/context/cart";
-import { categories } from "@/data/catalog";
+import { useCategories } from "@/hooks/useCatalog";
 import { Button } from "@/components/ui/button";
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -11,6 +11,7 @@ export function Header() {
   const { count, setOpen } = useCart();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [catOpen, setCatOpen] = useState(false);
+  const { data: categories = [] } = useCategories();
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border/70 bg-background/85 backdrop-blur-xl">

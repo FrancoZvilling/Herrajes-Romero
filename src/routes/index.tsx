@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { ArrowRight, Award, ShieldCheck, Truck, Wrench } from "lucide-react";
-import { brands, categories, getFeaturedProducts } from "@/data/catalog";
+import { useProducts, useCategories, useBrands } from "@/hooks/useCatalog";
 import { ProductCard } from "@/components/site/ProductCard";
 
 export const Route = createFileRoute("/")({
@@ -9,7 +9,11 @@ export const Route = createFileRoute("/")({
 });
 
 function Home() {
-  const featured = getFeaturedProducts().slice(0, 8);
+  const { data: products = [] } = useProducts();
+  const { data: categories = [] } = useCategories();
+  const { data: brands = [] } = useBrands();
+  
+  const featured = products.filter(p => p.featured).slice(0, 8);
 
   return (
     <>

@@ -1,9 +1,16 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, doc, setDoc } from "firebase/firestore";
-import { categories, products } from "../src/data/catalog";
-import dotenv from "dotenv";
+import { getFirestore, collection, writeBatch, doc } from "firebase/firestore";
+import * as dotenv from "dotenv";
+import { resolve } from "path";
+import { fileURLToPath } from "url";
+import { dirname } from "path";
 
-dotenv.config();
+// Initialize dotenv manually since import.meta.env isn't available in node script
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+dotenv.config({ path: resolve(__dirname, "../.env") });
+
+import { categories, products, brands } from "../src/data/catalog.ts";
 
 const firebaseConfig = {
   apiKey: process.env.VITE_FIREBASE_API_KEY,
@@ -18,30 +25,42 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 async function migrate() {
-  console.log("Iniciando migración a Firebase...");
+  console.log("Starting migration...");
 
-  console.log("\n1. Subiendo Categorías...");
-  for (const cat of categories) {
-    try {
-      await setDoc(doc(collection(db, "categories"), cat.slug), cat);
-      console.log(`✅ Categoría migrada: ${cat.name}`);
-    } catch (e: any) {
-      console.error(`❌ Error en categoría ${cat.name}:`, e.message);
-    }
-  }
+  try {
+    const batch = writeBatch(db);
 
-  console.log("\n2. Subiendo Productos...");
-  for (const prod of products) {
-    try {
-      await setDoc(doc(collection(db, "products"), prod.id), prod);
-      console.log(`✅ Producto migrado: ${prod.name}`);
-    } catch (e: any) {
-      console.error(`❌ Error en producto ${prod.name}:`, e.message);
-    }
+    // 1. Migrate Categories
+    console.log(`Migrating ${categories.length} categories...`);
+    categories.forEach(cat => {
+      const ref = doc(collection(db, "categories"), cat.slug);
+      batch.set(ref, cat);
+    });
+
+    // 2. Migrate Products
+    console.log(`Migrating ${products.length} products...`);
+    products.forEach(prod => {
+      const ref = doc(collection(db, "products"), prod.id);
+      batch.set(ref, {
+        ...prod,
+        variants: prod.variants || [],
+        tags: prod.tags || []
+      });
+    });
+
+    // 3. Migrate Brands
+    console.log(`Migrating ${brands.length} brands...`);
+    const brandsRef = doc(collection(db, "settings"), "catalog");
+    batch.set(brandsRef, { brands });
+
+    console.log("Committing to Firestore...");
+    await batch.commit();
+    console.log("Migration completed successfully!");
+    process.exit(0);
+  } catch (error) {
+    console.error("Migration failed:", error);
+    process.exit(1);
   }
-  
-  console.log("\n🚀 ¡Migración completada con éxito!");
-  process.exit(0);
 }
 
-migrate().catch(console.error);
+migrate();

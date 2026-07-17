@@ -1,14 +1,18 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { ChevronRight, SlidersHorizontal, X } from "lucide-react";
-import { brands, categories, getCategoryBySlug, getProductsByCategory } from "@/data/catalog";
+import { useProductsByCategory, useCategories } from "@/hooks/useCatalog";
 import { ProductCard } from "@/components/site/ProductCard";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "@/lib/firebase";
+import type { Category } from "@/data/catalog";
 
 export const Route = createFileRoute("/categoria/$slug")({
-  loader: ({ params }) => {
-    const cat = getCategoryBySlug(params.slug);
-    if (!cat) throw notFound();
-    return { category: cat };
+  loader: async ({ params }) => {
+    const docRef = doc(db, "categories", params.slug);
+    const snapshot = await getDoc(docRef);
+    if (!snapshot.exists()) throw notFound();
+    return { category: snapshot.data() as Category };
   },
   head: ({ loaderData }) => ({
     meta: loaderData
@@ -31,7 +35,8 @@ export const Route = createFileRoute("/categoria/$slug")({
 
 function CategoryPage() {
   const { category } = Route.useLoaderData();
-  const all = useMemo(() => getProductsByCategory(category.slug), [category.slug]);
+  const { data: all = [] } = useProductsByCategory(category.slug);
+  const { data: categories = [] } = useCategories();
 
   const [subFilter, setSubFilter] = useState<string | null>(null);
   const [brandFilter, setBrandFilter] = useState<string | null>(null);

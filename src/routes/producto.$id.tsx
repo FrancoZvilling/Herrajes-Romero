@@ -2,15 +2,19 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { ChevronRight, Minus, Plus, ShieldCheck, ShoppingBag, Truck, Wrench } from "lucide-react";
-import { getCategoryBySlug, getProductById, getProductsByCategory } from "@/data/catalog";
+import { useProductsByCategory, useCategories } from "@/hooks/useCatalog";
 import { formatARS, useCart } from "@/context/cart";
 import { ProductCard } from "@/components/site/ProductCard";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "@/lib/firebase";
+import type { Product } from "@/data/catalog";
 
 export const Route = createFileRoute("/producto/$id")({
-  loader: ({ params }) => {
-    const product = getProductById(params.id);
-    if (!product) throw notFound();
-    return { product };
+  loader: async ({ params }) => {
+    const docRef = doc(db, "products", params.id);
+    const snapshot = await getDoc(docRef);
+    if (!snapshot.exists()) throw notFound();
+    return { product: { id: snapshot.id, ...snapshot.data() } as Product };
   },
   head: ({ loaderData }) => ({
     meta: loaderData
@@ -33,7 +37,8 @@ export const Route = createFileRoute("/producto/$id")({
 
 function ProductPage() {
   const { product } = Route.useLoaderData();
-  const cat = getCategoryBySlug(product.category);
+  const { data: categories = [] } = useCategories();
+  const cat = categories.find((c) => c.slug === product.category);
   const { add } = useCart();
   const [qty, setQty] = useState(1);
   const [variants, setVariants] = useState<Record<string, string>>(() => {
@@ -42,7 +47,8 @@ function ProductPage() {
     return init;
   });
 
-  const related = getProductsByCategory(product.category).filter((p) => p.id !== product.id).slice(0, 4);
+  const { data: categoryProducts = [] } = useProductsByCategory(product.category);
+  const related = categoryProducts.filter((p) => p.id !== product.id).slice(0, 4);
   const initials = product.name.split(" ").slice(0, 2).map((w: string) => w[0]).join("").toUpperCase();
 
   return (

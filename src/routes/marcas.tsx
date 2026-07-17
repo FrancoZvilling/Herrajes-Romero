@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { brands } from "@/data/catalog";
+import { useBrands } from "@/hooks/useCatalog";
 
 export const Route = createFileRoute("/marcas")({
   head: () => ({
@@ -14,6 +14,7 @@ export const Route = createFileRoute("/marcas")({
 });
 
 function Brands() {
+  const { data: brands = [] } = useBrands();
   return (
     <section className="container-x py-20">
       <div className="mb-12 max-w-2xl">
