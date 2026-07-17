@@ -50,7 +50,7 @@ const createPreferenceFn = createServerFn({ method: "POST" })
     }
   });
 
-export const Route = createFileRoute("/checkout")({
+export const Route = createFileRoute("/checkout/")({
   component: CheckoutPage,
 });
 

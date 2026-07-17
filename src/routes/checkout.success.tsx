@@ -14,12 +14,14 @@ function CheckoutSuccessPage() {
   const status = search.status;
   const orderId = search.external_reference;
 
+  const shortOrderId = orderId ? `#${orderId.substring(0, 6).toUpperCase()}` : '';
+
   useEffect(() => {
     // Actualizamos Firebase directamente desde el frontend como alternativa al webhook
     // (Funciona bien para este MVP mientras no cerremos la pestaña)
     if (orderId && status === "approved") {
       updateDoc(doc(db, "orders", orderId), {
-        status: "paid",
+        status: "approved",
         paymentId: paymentId
       }).catch(err => console.error("Error actualizando orden:", err));
     }
@@ -31,7 +33,15 @@ function CheckoutSuccessPage() {
         <CheckCircle2 className="h-14 w-14" />
       </div>
       <h1 className="font-display text-4xl font-bold text-foreground">¡Pago Exitoso!</h1>
-      <p className="mt-4 max-w-lg text-lg text-muted-foreground">
+      
+      {shortOrderId && (
+        <div className="mt-6 rounded-lg bg-muted/50 px-6 py-4">
+          <p className="text-sm font-medium uppercase tracking-widest text-muted-foreground">Número de Pedido</p>
+          <p className="text-3xl font-bold text-[var(--brand)]">{shortOrderId}</p>
+        </div>
+      )}
+
+      <p className="mt-6 max-w-lg text-lg text-muted-foreground">
         Tu pago ha sido procesado correctamente y tu pedido ya está registrado en nuestro sistema.
         En breve nos comunicaremos con vos para coordinar los detalles de entrega.
       </p>

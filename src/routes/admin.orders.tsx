@@ -64,7 +64,10 @@ function AdminOrders() {
                           {format(date, "dd MMM yyyy, HH:mm", { locale: es })}
                         </td>
                         <td className="px-6 py-4 font-medium text-foreground">
-                          {order.customer?.nombre} {order.customer?.apellido}
+                          <div className="flex flex-col">
+                            <span className="font-mono text-xs font-bold text-[var(--brand)]">#{order.id.substring(0, 6).toUpperCase()}</span>
+                            <span>{order.customer?.nombre} {order.customer?.apellido}</span>
+                          </div>
                         </td>
                         <td className="px-6 py-4">{order.customer?.email}</td>
                         <td className="px-6 py-4">
@@ -98,7 +101,9 @@ function AdminOrders() {
       <Dialog open={!!selectedOrder} onOpenChange={(open) => !open && setSelectedOrder(null)}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
-            <DialogTitle>Detalle de Orden</DialogTitle>
+            <DialogTitle>
+              Detalle de Orden {selectedOrder ? `#${selectedOrder.id.substring(0, 6).toUpperCase()}` : ''}
+            </DialogTitle>
           </DialogHeader>
           
           {selectedOrder && (

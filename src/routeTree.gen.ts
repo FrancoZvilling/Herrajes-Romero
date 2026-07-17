@@ -12,9 +12,9 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as NosotrosRouteImport } from './routes/nosotros'
 import { Route as MarcasRouteImport } from './routes/marcas'
 import { Route as ContactoRouteImport } from './routes/contacto'
-import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CheckoutIndexRouteImport } from './routes/checkout.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as ProductoIdRouteImport } from './routes/producto.$id'
 import { Route as CheckoutSuccessRouteImport } from './routes/checkout.success'
@@ -40,11 +40,6 @@ const ContactoRoute = ContactoRouteImport.update({
   path: '/contacto',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CheckoutRoute = CheckoutRouteImport.update({
-  id: '/checkout',
-  path: '/checkout',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AdminRoute = AdminRouteImport.update({
   id: '/admin',
   path: '/admin',
@@ -53,6 +48,11 @@ const AdminRoute = AdminRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CheckoutIndexRoute = CheckoutIndexRouteImport.update({
+  id: '/checkout/',
+  path: '/checkout/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
@@ -104,7 +104,6 @@ const AdminBulkPricesRoute = AdminBulkPricesRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
-  '/checkout': typeof CheckoutRouteWithChildren
   '/contacto': typeof ContactoRoute
   '/marcas': typeof MarcasRoute
   '/nosotros': typeof NosotrosRoute
@@ -117,10 +116,10 @@ export interface FileRoutesByFullPath {
   '/checkout/success': typeof CheckoutSuccessRoute
   '/producto/$id': typeof ProductoIdRoute
   '/admin/': typeof AdminIndexRoute
+  '/checkout/': typeof CheckoutIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/checkout': typeof CheckoutRouteWithChildren
   '/contacto': typeof ContactoRoute
   '/marcas': typeof MarcasRoute
   '/nosotros': typeof NosotrosRoute
@@ -133,12 +132,12 @@ export interface FileRoutesByTo {
   '/checkout/success': typeof CheckoutSuccessRoute
   '/producto/$id': typeof ProductoIdRoute
   '/admin': typeof AdminIndexRoute
+  '/checkout': typeof CheckoutIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
-  '/checkout': typeof CheckoutRouteWithChildren
   '/contacto': typeof ContactoRoute
   '/marcas': typeof MarcasRoute
   '/nosotros': typeof NosotrosRoute
@@ -151,13 +150,13 @@ export interface FileRoutesById {
   '/checkout/success': typeof CheckoutSuccessRoute
   '/producto/$id': typeof ProductoIdRoute
   '/admin/': typeof AdminIndexRoute
+  '/checkout/': typeof CheckoutIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/admin'
-    | '/checkout'
     | '/contacto'
     | '/marcas'
     | '/nosotros'
@@ -170,10 +169,10 @@ export interface FileRouteTypes {
     | '/checkout/success'
     | '/producto/$id'
     | '/admin/'
+    | '/checkout/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/checkout'
     | '/contacto'
     | '/marcas'
     | '/nosotros'
@@ -186,11 +185,11 @@ export interface FileRouteTypes {
     | '/checkout/success'
     | '/producto/$id'
     | '/admin'
+    | '/checkout'
   id:
     | '__root__'
     | '/'
     | '/admin'
-    | '/checkout'
     | '/contacto'
     | '/marcas'
     | '/nosotros'
@@ -203,18 +202,19 @@ export interface FileRouteTypes {
     | '/checkout/success'
     | '/producto/$id'
     | '/admin/'
+    | '/checkout/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRouteWithChildren
-  CheckoutRoute: typeof CheckoutRouteWithChildren
   ContactoRoute: typeof ContactoRoute
   MarcasRoute: typeof MarcasRoute
   NosotrosRoute: typeof NosotrosRoute
   AdminLoginRoute: typeof AdminLoginRoute
   CategoriaSlugRoute: typeof CategoriaSlugRoute
   ProductoIdRoute: typeof ProductoIdRoute
+  CheckoutIndexRoute: typeof CheckoutIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -240,13 +240,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ContactoRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/checkout': {
-      id: '/checkout'
-      path: '/checkout'
-      fullPath: '/checkout'
-      preLoaderRoute: typeof CheckoutRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/admin': {
       id: '/admin'
       path: '/admin'
@@ -259,6 +252,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/checkout/': {
+      id: '/checkout/'
+      path: '/checkout'
+      fullPath: '/checkout/'
+      preLoaderRoute: typeof CheckoutIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/': {
@@ -345,28 +345,16 @@ const AdminRouteChildren: AdminRouteChildren = {
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
-interface CheckoutRouteChildren {
-  CheckoutSuccessRoute: typeof CheckoutSuccessRoute
-}
-
-const CheckoutRouteChildren: CheckoutRouteChildren = {
-  CheckoutSuccessRoute: CheckoutSuccessRoute,
-}
-
-const CheckoutRouteWithChildren = CheckoutRoute._addFileChildren(
-  CheckoutRouteChildren,
-)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRouteWithChildren,
-  CheckoutRoute: CheckoutRouteWithChildren,
   ContactoRoute: ContactoRoute,
   MarcasRoute: MarcasRoute,
   NosotrosRoute: NosotrosRoute,
   AdminLoginRoute: AdminLoginRoute,
   CategoriaSlugRoute: CategoriaSlugRoute,
   ProductoIdRoute: ProductoIdRoute,
+  CheckoutIndexRoute: CheckoutIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
