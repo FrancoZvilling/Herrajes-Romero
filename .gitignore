@@ -16,6 +16,7 @@ dist-ssr/
 build/
 .output/
 .nitro/
+.vercel/
 
 # Env
 .env
