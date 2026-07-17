@@ -6,11 +6,13 @@ import { useCart } from "@/context/cart";
 import { useCategories } from "@/hooks/useCatalog";
 import { Button } from "@/components/ui/button";
 import { AnimatePresence, motion } from "framer-motion";
+import { SiteSearch } from "./SiteSearch";
 
 export function Header() {
   const { count, setOpen } = useCart();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [catOpen, setCatOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const { data: categories = [] } = useCategories();
 
   return (
@@ -81,8 +83,9 @@ export function Header() {
 
         <div className="ml-auto flex items-center gap-1.5">
           <button
+            onClick={() => setSearchOpen(true)}
             aria-label="Buscar"
-            className="hidden h-10 w-10 items-center justify-center rounded-md text-foreground/70 transition hover:bg-[var(--surface-muted)] hover:text-foreground md:inline-flex"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-md text-foreground/70 transition hover:bg-[var(--surface-muted)] hover:text-foreground"
           >
             <Search className="h-5 w-5" />
           </button>
@@ -149,6 +152,9 @@ export function Header() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Buscador Integrado */}
+      <SiteSearch open={searchOpen} onOpenChange={setSearchOpen} />
     </header>
   );
 }
