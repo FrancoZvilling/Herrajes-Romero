@@ -17,7 +17,7 @@ const createPreferenceFn = createServerFn({ method: "POST" })
       });
       const preference = new Preference(client);
 
-      const serverBaseUrl = process.env.VITE_SITE_URL || 'http://localhost:8080';
+      const serverBaseUrl = data.baseUrl || process.env.VITE_SITE_URL || 'http://localhost:8080';
       const response = await preference.create({
         body: {
           items: data.items?.map((item: any) => ({

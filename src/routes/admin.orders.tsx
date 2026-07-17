@@ -19,14 +19,14 @@ function AdminOrders() {
   const { data: orders = [], isLoading } = useOrders();
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
 
-  // Sort orders by status (approved first), then date descending
-  const sortedOrders = [...orders].sort((a, b) => {
-    if (a.status === "approved" && b.status !== "approved") return -1;
-    if (a.status !== "approved" && b.status === "approved") return 1;
-    const dateA = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : new Date(a.createdAt).getTime();
-    const dateB = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : new Date(b.createdAt).getTime();
-    return dateB - dateA;
-  });
+  // Solo mostrar órdenes aprobadas (con pago hecho)
+  const filteredOrders = [...orders]
+    .filter((order) => order.status === "approved")
+    .sort((a, b) => {
+      const dateA = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : new Date(a.createdAt).getTime();
+      const dateB = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : new Date(b.createdAt).getTime();
+      return dateB - dateA;
+    });
 
   return (
     <div>
@@ -49,14 +49,14 @@ function AdminOrders() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
-                {sortedOrders.length === 0 ? (
+                {filteredOrders.length === 0 ? (
                   <tr>
                     <td colSpan={6} className="px-6 py-8 text-center text-muted-foreground">
                       No hay órdenes registradas.
                     </td>
                   </tr>
                 ) : (
-                  sortedOrders.map((order) => {
+                  filteredOrders.map((order) => {
                     const date = order.createdAt?.toDate ? order.createdAt.toDate() : new Date(order.createdAt);
                     return (
                       <tr key={order.id} className="transition-colors hover:bg-muted/30">

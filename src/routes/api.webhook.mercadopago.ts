@@ -7,8 +7,18 @@ export const APIRoute = createAPIFileRoute('/api/webhook/mercadopago')({
   POST: async ({ request }) => {
     try {
       const url = new URL(request.url)
-      const type = url.searchParams.get('type') || url.searchParams.get('topic')
-      const id = url.searchParams.get('data.id') || url.searchParams.get('id')
+      let type = url.searchParams.get('type') || url.searchParams.get('topic')
+      let id = url.searchParams.get('data.id') || url.searchParams.get('id')
+
+      if (!type || !id) {
+        try {
+          const body = await request.json()
+          type = type || body.type || body.topic || body.action?.split('.')[0]
+          id = id || body.data?.id || body.id
+        } catch (e) {
+          // Body not JSON or empty
+        }
+      }
 
       if ((type === 'payment' || type === 'merchant_order') && id) {
         // Initialize MP
