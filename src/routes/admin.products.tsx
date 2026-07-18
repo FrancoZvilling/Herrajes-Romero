@@ -2,10 +2,10 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useProducts } from "@/hooks/useCatalog";
 import { formatARS } from "@/context/cart";
 import { useState } from "react";
-import { Plus, Search, Edit2, Trash2 } from "lucide-react";
+import { Plus, Search, Edit2, Trash2, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { deleteDoc, doc } from "firebase/firestore";
+import { deleteDoc, doc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { ProductFormModal } from "@/components/admin/ProductFormModal";
 import { useQueryClient } from "@tanstack/react-query";
@@ -30,6 +30,25 @@ function AdminProducts() {
     if (confirm("¿Estás seguro de que deseas eliminar este producto?")) {
       await deleteDoc(doc(db, "products", id));
       queryClient.invalidateQueries({ queryKey: ["products"] });
+    }
+  };
+
+  const handleToggleFeatured = async (product: any) => {
+    const currentlyFeatured = products.filter((p) => p.featured).length;
+    
+    if (!product.featured && currentlyFeatured >= 8) {
+      alert("No puedes destacar más de 8 productos. Por favor, desmarca alguno primero.");
+      return;
+    }
+
+    try {
+      await updateDoc(doc(db, "products", product.id), {
+        featured: !product.featured
+      });
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+    } catch (error) {
+      console.error("Error toggling featured status:", error);
+      alert("Hubo un error al intentar destacar el producto.");
     }
   };
 
@@ -106,6 +125,17 @@ function AdminProducts() {
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center justify-end gap-2">
+                          <button
+                            onClick={() => handleToggleFeatured(product)}
+                            className={`rounded-lg p-2 transition ${
+                              product.featured
+                                ? "text-yellow-500 hover:bg-yellow-500/10"
+                                : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                            }`}
+                            title={product.featured ? "Quitar de destacados" : "Agregar a destacados"}
+                          >
+                            <Star className="h-4 w-4" fill={product.featured ? "currentColor" : "none"} />
+                          </button>
                           <button
                             onClick={() => handleEdit(product)}
                             className="rounded-lg p-2 text-muted-foreground transition hover:bg-muted hover:text-foreground"

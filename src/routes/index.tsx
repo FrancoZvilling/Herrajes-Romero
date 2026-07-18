@@ -18,15 +18,30 @@ function Home() {
   return (
     <>
       {/* HERO */}
-      <section className="relative overflow-hidden bg-[var(--ink)] text-white">
-        <div className="pointer-events-none absolute inset-0">
-          <div className="absolute -right-40 -top-40 h-[600px] w-[600px] rounded-full bg-[var(--brand)] opacity-30 blur-3xl" />
-          <div className="absolute bottom-0 left-1/3 h-[400px] w-[400px] rounded-full bg-[var(--brand)] opacity-10 blur-3xl" />
-          <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:60px_60px]" />
+      <section className="relative overflow-hidden bg-[var(--ink)] text-white min-h-[600px] lg:min-h-[700px] flex items-center">
+        {/* Background Image (Right side) */}
+        <div className="absolute inset-0 z-0 flex justify-end">
+          <div className="relative h-full w-full lg:w-3/5">
+            <img 
+              src="/hero-bg.png" 
+              alt="Ferretería Casa Romero" 
+              className="h-full w-full object-cover object-[center_right] opacity-40 lg:opacity-100" 
+            />
+            {/* Gradient Overlay to fade the left edge seamlessly into the dark background */}
+            <div className="absolute inset-0 bg-gradient-to-r from-[var(--ink)] via-[var(--ink)]/60 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[var(--ink)]/80 via-transparent to-transparent lg:hidden" />
+          </div>
         </div>
 
-        <div className="container-x relative grid gap-12 py-20 lg:grid-cols-[1.1fr_1fr] lg:py-28">
-          <div>
+        {/* Lamparones naranjas */}
+        <div className="pointer-events-none absolute inset-0 z-0 mix-blend-screen">
+          <div className="absolute -left-40 -top-40 h-[600px] w-[600px] rounded-full bg-[var(--brand)] opacity-20 blur-3xl" />
+          <div className="absolute bottom-0 left-1/3 h-[400px] w-[400px] rounded-full bg-[var(--brand)] opacity-10 blur-3xl" />
+          <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:60px_60px]" />
+        </div>
+
+        <div className="container-x relative z-10 w-full py-20 lg:py-28">
+          <div className="max-w-2xl">
             <motion.div
               initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4 }}
@@ -79,37 +94,6 @@ function Home() {
               <Stat n="11" l="marcas líderes" />
             </div>
           </div>
-
-          {/* Product grid mosaic */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.96 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="relative hidden lg:block"
-          >
-            <div className="grid grid-cols-2 gap-4">
-              {categories.slice(0, 4).map((c, i) => (
-                <Link
-                  key={c.slug}
-                  to="/categoria/$slug" params={{ slug: c.slug }}
-                  className={`group relative aspect-square overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.08] to-white/[0.02] p-6 backdrop-blur transition hover:border-[var(--brand)] hover:bg-white/[0.06] ${
-                    i === 1 ? "translate-y-8" : ""
-                  } ${i === 3 ? "translate-y-8" : ""}`}
-                >
-                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_right,var(--brand),transparent_70%)] opacity-0 transition-opacity group-hover:opacity-20" />
-                  <div className="relative flex h-full flex-col justify-between">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-[var(--brand)]/20 text-[var(--brand)]">
-                      <Wrench className="h-5 w-5" />
-                    </div>
-                    <div>
-                      <p className="font-display text-lg font-semibold text-white">{c.name}</p>
-                      <p className="mt-1 text-xs text-white/60">{c.description}</p>
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </motion.div>
         </div>
       </section>
 

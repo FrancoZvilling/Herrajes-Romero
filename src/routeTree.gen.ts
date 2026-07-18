@@ -66,9 +66,9 @@ const ProductoIdRoute = ProductoIdRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const CheckoutSuccessRoute = CheckoutSuccessRouteImport.update({
-  id: '/success',
-  path: '/success',
-  getParentRoute: () => CheckoutRoute,
+  id: '/checkout/success',
+  path: '/checkout/success',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const CategoriaSlugRoute = CategoriaSlugRouteImport.update({
   id: '/categoria/$slug',
@@ -213,6 +213,7 @@ export interface RootRouteChildren {
   NosotrosRoute: typeof NosotrosRoute
   AdminLoginRoute: typeof AdminLoginRoute
   CategoriaSlugRoute: typeof CategoriaSlugRoute
+  CheckoutSuccessRoute: typeof CheckoutSuccessRoute
   ProductoIdRoute: typeof ProductoIdRoute
   CheckoutIndexRoute: typeof CheckoutIndexRoute
 }
@@ -277,10 +278,10 @@ declare module '@tanstack/react-router' {
     }
     '/checkout/success': {
       id: '/checkout/success'
-      path: '/success'
+      path: '/checkout/success'
       fullPath: '/checkout/success'
       preLoaderRoute: typeof CheckoutSuccessRouteImport
-      parentRoute: typeof CheckoutRoute
+      parentRoute: typeof rootRouteImport
     }
     '/categoria/$slug': {
       id: '/categoria/$slug'
@@ -353,6 +354,7 @@ const rootRouteChildren: RootRouteChildren = {
   NosotrosRoute: NosotrosRoute,
   AdminLoginRoute: AdminLoginRoute,
   CategoriaSlugRoute: CategoriaSlugRoute,
+  CheckoutSuccessRoute: CheckoutSuccessRoute,
   ProductoIdRoute: ProductoIdRoute,
   CheckoutIndexRoute: CheckoutIndexRoute,
 }
