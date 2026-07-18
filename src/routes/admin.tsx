@@ -92,7 +92,7 @@ function AdminLayout() {
   return (
     <div className="flex min-h-screen bg-[var(--surface)]">
       {/* Sidebar Desktop */}
-      <aside className="hidden w-64 lg:block">
+      <aside className="hidden w-64 shrink-0 lg:sticky lg:top-0 lg:block lg:h-screen">
         <Sidebar />
       </aside>
 

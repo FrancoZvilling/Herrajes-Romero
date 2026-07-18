@@ -4,6 +4,9 @@ import { formatARS } from "@/context/cart";
 import { useState } from "react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
+import { Archive } from "lucide-react";
+import { doc, updateDoc } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 import {
   Dialog,
   DialogContent,
@@ -19,14 +22,27 @@ function AdminOrders() {
   const { data: orders = [], isLoading } = useOrders();
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
 
-  // Solo mostrar órdenes aprobadas (con pago hecho)
+  // Solo mostrar órdenes aprobadas (con pago hecho) y que no estén archivadas
   const filteredOrders = [...orders]
-    .filter((order) => order.status === "approved")
+    .filter((order) => order.status === "approved" && !order.archived)
     .sort((a, b) => {
       const dateA = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : new Date(a.createdAt).getTime();
       const dateB = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : new Date(b.createdAt).getTime();
       return dateB - dateA;
     });
+
+  const handleArchive = async (id: string) => {
+    if (confirm("¿Estás seguro de que deseas archivar esta orden? No se borrará del historial financiero, pero desaparecerá de esta lista.")) {
+      try {
+        await updateDoc(doc(db, "orders", id), {
+          archived: true
+        });
+      } catch (error) {
+        console.error("Error archivando orden:", error);
+        alert("Hubo un error al archivar la orden.");
+      }
+    }
+  };
 
   return (
     <div>
@@ -81,12 +97,21 @@ function AdminOrders() {
                           {formatARS(order.total)}
                         </td>
                         <td className="px-6 py-4 text-right">
-                          <button
-                            onClick={() => setSelectedOrder(order)}
-                            className="text-[var(--brand)] hover:underline"
-                          >
-                            Ver detalle
-                          </button>
+                          <div className="flex items-center justify-end gap-3">
+                            <button
+                              onClick={() => handleArchive(order.id)}
+                              className="text-muted-foreground hover:text-destructive transition-colors"
+                              title="Archivar/Ocultar orden (ya enviada)"
+                            >
+                              <Archive className="h-4 w-4" />
+                            </button>
+                            <button
+                              onClick={() => setSelectedOrder(order)}
+                              className="font-medium text-[var(--brand)] hover:underline"
+                            >
+                              Ver detalle
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     );
@@ -117,6 +142,28 @@ function AdminOrders() {
                     <p><strong>Teléfono:</strong> {selectedOrder.customer.telefono}</p>
                     <p><strong>DNI/CUIL:</strong> {selectedOrder.customer.dni}</p>
                     <p className="mt-2 text-muted-foreground">Nota: {selectedOrder.customer.note || "Sin nota"}</p>
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="mb-2 text-sm font-bold uppercase tracking-widest text-[var(--brand)]">Datos de Envío</h3>
+                  <div className="rounded-lg border border-border bg-muted/30 p-4 text-sm">
+                    <p><strong>Método:</strong> {
+                      selectedOrder.customer.metodoEnvio === "acordar" ? "Acordar con el vendedor" :
+                      selectedOrder.customer.metodoEnvio === "uber" ? "Uber Entregas" :
+                      selectedOrder.customer.metodoEnvio === "andreani" ? "Andreani" :
+                      selectedOrder.customer.metodoEnvio === "viacargo" ? "Vía Cargo" :
+                      selectedOrder.customer.metodoEnvio || "No especificado"
+                    }</p>
+                    
+                    {selectedOrder.customer.metodoEnvio !== "acordar" && selectedOrder.customer.direccion && (
+                      <div className="mt-3 space-y-1 border-t border-border/50 pt-3">
+                        <p><strong>Dirección:</strong> {selectedOrder.customer.direccion}</p>
+                        <p><strong>Ciudad:</strong> {selectedOrder.customer.ciudad}</p>
+                        <p><strong>Provincia:</strong> {selectedOrder.customer.provincia}</p>
+                        <p><strong>C.P.:</strong> {selectedOrder.customer.codigoPostal}</p>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
