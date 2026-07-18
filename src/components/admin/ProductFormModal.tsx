@@ -16,6 +16,7 @@ export function ProductFormModal({ product, onClose }: { product: any; onClose: 
   const [description, setDescription] = useState(product?.description || "");
   const [price, setPrice] = useState(product?.price?.toString() || "");
   const [category, setCategory] = useState(product?.category || "");
+  const [subcategory, setSubcategory] = useState(product?.subcategory || "");
   const [brand, setBrand] = useState(product?.brand || "");
   
   // Variants state: array of { name: "Medida", options: ["10mm", "20mm"] }
@@ -24,6 +25,9 @@ export function ProductFormModal({ product, onClose }: { product: any; onClose: 
   );
 
   const [loading, setLoading] = useState(false);
+
+  const selectedCategoryObj = categories.find((c: any) => c.slug === category);
+  const availableSubcategories = selectedCategoryObj?.subcategories || [];
 
   const handleAddVariant = () => {
     if (variants.length >= 2) return; // Limit to 2 max as per requirements
@@ -68,6 +72,7 @@ export function ProductFormModal({ product, onClose }: { product: any; onClose: 
       description,
       price: parseFloat(price) || 0,
       category,
+      subcategory: subcategory || null,
       brand,
       variants: finalVariants
     };
@@ -124,7 +129,10 @@ export function ProductFormModal({ product, onClose }: { product: any; onClose: 
               <select
                 id="category"
                 value={category}
-                onChange={(e) => setCategory(e.target.value)}
+                onChange={(e) => {
+                  setCategory(e.target.value);
+                  setSubcategory(""); // Reset subcategory when category changes
+                }}
                 required
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               >
@@ -134,6 +142,23 @@ export function ProductFormModal({ product, onClose }: { product: any; onClose: 
                 ))}
               </select>
             </div>
+
+            {availableSubcategories.length > 0 && (
+              <div className="space-y-2">
+                <Label htmlFor="subcategory">Subcategoría (Opcional)</Label>
+                <select
+                  id="subcategory"
+                  value={subcategory}
+                  onChange={(e) => setSubcategory(e.target.value)}
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  <option value="">Ninguna...</option>
+                  {availableSubcategories.map((sub: string) => (
+                    <option key={sub} value={sub}>{sub}</option>
+                  ))}
+                </select>
+              </div>
+            )}
 
             <div className="space-y-2">
               <Label htmlFor="brand">Marca</Label>

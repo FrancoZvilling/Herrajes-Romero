@@ -91,7 +91,21 @@ function CategoryFormModal({ category, onClose }: { category: any; onClose: () =
   const [name, setName] = useState(category?.name || "");
   const [slug, setSlug] = useState(category?.slug || "");
   const [description, setDescription] = useState(category?.description || "");
+  const [subcategories, setSubcategories] = useState<string[]>(category?.subcategories || []);
+  const [newSub, setNewSub] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const handleAddSub = () => {
+    const trimmed = newSub.trim();
+    if (trimmed && !subcategories.includes(trimmed)) {
+      setSubcategories([...subcategories, trimmed]);
+      setNewSub("");
+    }
+  };
+
+  const handleRemoveSub = (sub: string) => {
+    setSubcategories(subcategories.filter((s) => s !== sub));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -104,7 +118,8 @@ function CategoryFormModal({ category, onClose }: { category: any; onClose: () =
       await setDoc(doc(db, "categories", finalSlug), {
         name,
         slug: finalSlug,
-        description
+        description,
+        subcategories
       });
       onClose();
     } catch (error) {
@@ -142,6 +157,39 @@ function CategoryFormModal({ category, onClose }: { category: any; onClose: () =
           <div className="space-y-2">
             <Label htmlFor="description">Descripción</Label>
             <Textarea id="description" value={description} onChange={(e) => setDescription(e.target.value)} rows={3} required />
+          </div>
+
+          <div className="space-y-3 rounded-lg border border-border bg-muted/30 p-4">
+            <Label>Subcategorías</Label>
+            <div className="flex flex-wrap gap-2">
+              {subcategories.map((sub) => (
+                <div key={sub} className="flex items-center gap-1 rounded-full bg-[var(--brand)]/10 px-3 py-1 text-sm font-medium text-[var(--brand)]">
+                  {sub}
+                  <button type="button" onClick={() => handleRemoveSub(sub)} className="ml-1 hover:text-red-500">
+                    <Trash2 className="h-3 w-3" />
+                  </button>
+                </div>
+              ))}
+              {subcategories.length === 0 && (
+                <span className="text-sm text-muted-foreground">No hay subcategorías agregadas.</span>
+              )}
+            </div>
+            <div className="flex gap-2">
+              <Input 
+                value={newSub} 
+                onChange={(e) => setNewSub(e.target.value)} 
+                placeholder="Ej: Enchufes" 
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    handleAddSub();
+                  }
+                }}
+              />
+              <Button type="button" variant="secondary" onClick={handleAddSub}>
+                Agregar
+              </Button>
+            </div>
           </div>
 
           <div className="flex justify-end gap-3 pt-4">
