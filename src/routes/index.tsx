@@ -182,19 +182,19 @@ function Home() {
       </section>
 
       {/* Featured */}
-      <section className="relative overflow-hidden bg-[#c2410c] py-24 border-y border-black/10">
+      <section className="relative overflow-hidden bg-[#7c2d12] py-24 border-y border-black/20">
         {/* UNIQUE BACKGROUND TEXTURE & ANIMATION (Inverse) */}
         <div className="absolute inset-0 z-0">
           {/* Tech/Hardware pattern texture in black */}
           <div 
-            className="absolute inset-0 opacity-[0.12]"
+            className="absolute inset-0 opacity-[0.25]"
             style={{
               backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
             }}
           />
 
           {/* Vignette mask to fade out the edges with a darker brown/orange */}
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_20%,#7c2d12_100%)] opacity-80" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_10%,#1a0500_100%)] opacity-95" />
 
           {/* Cinematic scanning light (moves vertically, black shadow) */}
           <motion.div
@@ -202,7 +202,7 @@ function Home() {
             transition={{ duration: 7, repeat: Infinity, ease: "linear", delay: 3.5 }}
             className="absolute left-0 right-0 h-[300px] w-full"
             style={{
-              background: 'linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.15), transparent)'
+              background: 'linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.35), transparent)'
             }}
           />
         </div>
