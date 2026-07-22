@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Facebook, Instagram, MapPin, Phone, Clock, MessageCircle } from "lucide-react";
+import { Facebook, Instagram, MapPin, Phone, Clock, MessageCircle, Rocket } from "lucide-react";
 import { useCategories, useBrands } from "@/hooks/useCatalog";
 import { Logo } from "./Logo";
 
@@ -87,7 +87,21 @@ export function Footer() {
 
       <div className="border-t border-white/10">
         <div className="container-x flex flex-col items-center justify-between gap-3 py-5 text-xs text-white/50 md:flex-row">
-          <p>© {new Date().getFullYear()} Casa Romero Herrajes · Todos los derechos reservados.</p>
+          <div className="flex flex-col gap-1 text-center md:text-left">
+            <p>© {new Date().getFullYear()} Casa Romero Herrajes · Todos los derechos reservados.</p>
+            <p className="flex items-center justify-center gap-1.5 md:justify-start">
+              Desarrollado por
+              <a 
+                href="https://wa.me/5493541315119" 
+                target="_blank" 
+                rel="noreferrer"
+                className="group flex items-center gap-1 font-semibold text-[var(--brand)] transition-colors hover:text-orange-400"
+              >
+                Franco Zvilling
+                <Rocket className="h-3.5 w-3.5 transition-transform duration-300 group-hover:-translate-y-1 group-hover:translate-x-1" />
+              </a>
+            </p>
+          </div>
           <div className="flex flex-wrap items-center gap-2">
             <span className="text-white/40">Aceptamos:</span>
             {["VISA", "MasterCard", "Naranja", "Mercado Pago"].map((m) => (
