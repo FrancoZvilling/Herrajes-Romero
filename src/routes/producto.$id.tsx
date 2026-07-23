@@ -79,7 +79,11 @@ function ProductPage() {
           className="relative aspect-square overflow-hidden rounded-2xl border border-border bg-gradient-to-br from-[var(--surface-muted)] to-[var(--surface)]"
         >
           <div className="absolute inset-0 flex items-center justify-center">
-            <span className="font-display text-[160px] font-bold text-foreground/10">{initials}</span>
+            {product.imageUrl ? (
+              <img src={product.imageUrl} alt={product.name} className="h-full w-full object-cover" />
+            ) : (
+              <span className="font-display text-[160px] font-bold text-foreground/10">{initials}</span>
+            )}
           </div>
           {product.brand && (
             <span className="absolute left-4 top-4 rounded-full bg-white/95 px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider shadow-sm">

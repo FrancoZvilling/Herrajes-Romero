@@ -5,8 +5,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { addDoc, collection, doc, updateDoc } from "firebase/firestore";
-import { db } from "@/lib/firebase";
-import { Plus, Trash2, X } from "lucide-react";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { db, storage } from "@/lib/firebase";
+import { Plus, Trash2, X, Upload, Image as ImageIcon } from "lucide-react";
 import { useCategories } from "@/hooks/useCatalog";
 
 export function ProductFormModal({ product, onClose }: { product: any; onClose: () => void }) {
@@ -19,6 +20,9 @@ export function ProductFormModal({ product, onClose }: { product: any; onClose: 
   const [subcategory, setSubcategory] = useState(product?.subcategory || "");
   const [brand, setBrand] = useState(product?.brand || "");
   
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string>(product?.imageUrl || "");
+
   // Variants state: array of { name: "Medida", options: ["10mm", "20mm"] }
   const [variants, setVariants] = useState<{name: string; options: string[]}[]>(
     product?.variants || []
@@ -60,6 +64,14 @@ export function ProductFormModal({ product, onClose }: { product: any; onClose: 
     setVariants(updated);
   };
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setImageFile(file);
+      setImagePreview(URL.createObjectURL(file));
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -67,17 +79,26 @@ export function ProductFormModal({ product, onClose }: { product: any; onClose: 
     // Clean up empty variants
     const finalVariants = variants.filter(v => v.name.trim() !== "" && v.options.length > 0);
 
-    const productData = {
-      name,
-      description,
-      price: parseFloat(price) || 0,
-      category,
-      subcategory: subcategory || null,
-      brand,
-      variants: finalVariants
-    };
-
     try {
+      let uploadedImageUrl = product?.imageUrl || null;
+
+      if (imageFile) {
+        const imageRef = ref(storage, `products/${Date.now()}_${imageFile.name}`);
+        await uploadBytes(imageRef, imageFile);
+        uploadedImageUrl = await getDownloadURL(imageRef);
+      }
+
+      const productData = {
+        name,
+        description,
+        price: parseFloat(price) || 0,
+        category,
+        subcategory: subcategory || null,
+        brand,
+        imageUrl: uploadedImageUrl,
+        variants: finalVariants
+      };
+
       if (product?.id) {
         await updateDoc(doc(db, "products", product.id), productData);
       } else {
@@ -168,6 +189,35 @@ export function ProductFormModal({ product, onClose }: { product: any; onClose: 
                 onChange={(e) => setBrand(e.target.value)}
                 placeholder="Ej: Fumaca (Opcional)"
               />
+            </div>
+          </div>
+
+          <div className="space-y-4 rounded-xl border border-border bg-muted/20 p-5">
+            <h3 className="font-semibold text-foreground">Imagen del Producto</h3>
+            <div className="flex items-start gap-4">
+              <div className="relative flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-dashed border-border bg-background">
+                {imagePreview ? (
+                  <img src={imagePreview} alt="Preview" className="h-full w-full object-cover" />
+                ) : (
+                  <ImageIcon className="h-8 w-8 text-muted-foreground/50" />
+                )}
+              </div>
+              <div className="flex-1 space-y-2">
+                <Label htmlFor="image" className="cursor-pointer inline-flex items-center gap-2 rounded-md bg-[var(--brand)] px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-[var(--brand)]/90">
+                  <Upload className="h-4 w-4" />
+                  {imagePreview ? "Cambiar Imagen" : "Subir Imagen"}
+                </Label>
+                <Input
+                  id="image"
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleImageChange}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Recomendado: Imagen cuadrada (1:1) en formato JPG o PNG. Tamaño máximo 2MB.
+                </p>
+              </div>
             </div>
           </div>
 

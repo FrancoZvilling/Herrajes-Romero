@@ -32,9 +32,13 @@ export function ProductCard({ product }: { product: Product }) {
         className="relative block aspect-square overflow-hidden bg-gradient-to-br from-[var(--surface-muted)] to-[var(--surface)]"
       >
         <div className="absolute inset-0 flex items-center justify-center">
-          <span className="font-display text-6xl font-bold text-foreground/10 transition-transform duration-500 group-hover:scale-110">
-            {initials}
-          </span>
+          {product.imageUrl ? (
+            <img src={product.imageUrl} alt={product.name} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" />
+          ) : (
+            <span className="font-display text-6xl font-bold text-foreground/10 transition-transform duration-500 group-hover:scale-110">
+              {initials}
+            </span>
+          )}
         </div>
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,var(--brand)_0%,transparent_60%)] opacity-0 mix-blend-multiply transition-opacity duration-500 group-hover:opacity-10" />
         {product.brand && (
