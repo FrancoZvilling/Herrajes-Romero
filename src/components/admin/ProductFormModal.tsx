@@ -23,8 +23,8 @@ export function ProductFormModal({ product, onClose }: { product: any; onClose: 
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>(product?.imageUrl || "");
 
-  // Variants state: array of { name: "Medida", options: ["10mm", "20mm"] }
-  const [variants, setVariants] = useState<{name: string; options: string[]}[]>(
+  // Variants state: array of { name: "Medida", options: { value: "10mm", price?: number }[] }
+  const [variants, setVariants] = useState<{name: string; options: {value: string, price?: number}[]}[]>(
     product?.variants || []
   );
 
@@ -52,8 +52,8 @@ export function ProductFormModal({ product, onClose }: { product: any; onClose: 
   const handleAddOption = (variantIndex: number, optionValue: string) => {
     if (!optionValue.trim()) return;
     const updated = [...variants];
-    if (!updated[variantIndex].options.includes(optionValue)) {
-      updated[variantIndex].options.push(optionValue.trim());
+    if (!updated[variantIndex].options.find(o => o.value === optionValue)) {
+      updated[variantIndex].options.push({ value: optionValue.trim() });
       setVariants(updated);
     }
   };
@@ -267,20 +267,61 @@ export function ProductFormModal({ product, onClose }: { product: any; onClose: 
 
                   <div>
                     <Label className="text-xs uppercase tracking-widest text-muted-foreground mb-2 block">Opciones</Label>
-                    <div className="flex flex-wrap gap-2 mb-2">
+                    <div className="flex flex-col gap-3 mb-4">
                       {variant.options.map((opt, oIdx) => (
-                        <div key={oIdx} className="flex items-center gap-1 rounded-full bg-[var(--brand)]/10 px-3 py-1 text-sm font-medium text-[var(--brand)]">
-                          {opt}
-                          <button type="button" onClick={() => handleRemoveOption(vIdx, oIdx)}>
-                            <X className="h-3 w-3 hover:text-foreground" />
-                          </button>
+                        <div key={oIdx} className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-lg bg-[var(--surface-muted)] p-3">
+                          <div className="flex items-center gap-3">
+                            <span className="font-semibold">{opt.value}</span>
+                          </div>
+                          
+                          <div className="flex items-center gap-4">
+                            <label className="flex items-center gap-2 text-sm text-muted-foreground cursor-pointer">
+                              <input 
+                                type="checkbox"
+                                checked={opt.price === undefined || opt.price === null}
+                                onChange={(e) => {
+                                  const updated = [...variants];
+                                  if (e.target.checked) {
+                                    delete updated[vIdx].options[oIdx].price;
+                                  } else {
+                                    updated[vIdx].options[oIdx].price = parseFloat(price) || 0;
+                                  }
+                                  setVariants(updated);
+                                }}
+                                className="rounded border-input text-[var(--brand)] focus:ring-[var(--brand)] h-4 w-4"
+                              />
+                              Mismo precio que base
+                            </label>
+                            
+                            {opt.price !== undefined && opt.price !== null && (
+                              <div className="flex items-center gap-2">
+                                <span className="text-sm font-medium">$</span>
+                                <Input 
+                                  type="number"
+                                  min="0"
+                                  step="0.01"
+                                  value={opt.price}
+                                  onChange={(e) => {
+                                    const updated = [...variants];
+                                    updated[vIdx].options[oIdx].price = parseFloat(e.target.value) || 0;
+                                    setVariants(updated);
+                                  }}
+                                  className="h-8 w-24 bg-background"
+                                />
+                              </div>
+                            )}
+
+                            <button type="button" onClick={() => handleRemoveOption(vIdx, oIdx)} className="text-muted-foreground hover:text-destructive p-1">
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                          </div>
                         </div>
                       ))}
                     </div>
                     <div className="flex items-center gap-2">
                       <Input 
                         placeholder="Ej: 20mm" 
-                        className="h-8 max-w-[150px]"
+                        className="h-8 max-w-[200px]"
                         onKeyDown={(e) => {
                           if (e.key === 'Enter') {
                             e.preventDefault();

@@ -66,7 +66,7 @@ export function useOrders() {
     queryKey: ["orders"],
     queryFn: async () => {
       const snapshot = await getDocs(collection(db, "orders"));
-      return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      return snapshot.docs.map(doc => ({ id: doc.id, ...(doc.data() as any) }));
     }
   });
 }

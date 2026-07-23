@@ -1,5 +1,5 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import { ChevronRight, Minus, Plus, ShieldCheck, ShoppingBag, Truck, Wrench } from "lucide-react";
 import { useProductsByCategory, useCategories } from "@/hooks/useCatalog";
@@ -43,9 +43,24 @@ function ProductPage() {
   const [qty, setQty] = useState(1);
   const [variants, setVariants] = useState<Record<string, string>>(() => {
     const init: Record<string, string> = {};
-    product.variants?.forEach((v: { name: string; options: string[] }) => (init[v.name] = v.options[0]));
+    product.variants?.forEach((v) => (init[v.name] = v.options[0]?.value));
     return init;
   });
+
+  const currentPrice = useMemo(() => {
+    let price = product.price;
+    if (product.variants) {
+      for (const v of product.variants) {
+        const selectedVal = variants[v.name];
+        const opt = v.options.find(o => o.value === selectedVal);
+        if (opt && opt.price !== undefined && opt.price !== null) {
+          price = opt.price;
+          break; // First one wins
+        }
+      }
+    }
+    return price;
+  }, [product, variants]);
 
   const { data: categoryProducts = [] } = useProductsByCategory(product.category);
   const related = categoryProducts.filter((p) => p.id !== product.id).slice(0, 4);
@@ -103,13 +118,13 @@ function ProductPage() {
           <p className="mt-4 text-muted-foreground">{product.description}</p>
 
           <div className="mt-6 flex items-baseline gap-3">
-            <span className="font-display text-4xl font-bold">{formatARS(product.price)}</span>
+            <span className="font-display text-4xl font-bold">{formatARS(currentPrice)}</span>
             <span className="text-sm text-muted-foreground">IVA incluido</span>
           </div>
 
           {product.variants && product.variants.length > 0 && (
             <div className="mt-8 space-y-5">
-              {product.variants.map((v: { name: string; options: string[] }) => (
+              {product.variants.map((v) => (
                 <div key={v.name}>
                   <div className="mb-2 flex items-center justify-between">
                     <label className="text-xs font-bold uppercase tracking-widest text-foreground">
@@ -120,19 +135,19 @@ function ProductPage() {
                     </span>
                   </div>
                   <div className="flex flex-wrap gap-2">
-                    {v.options.map((opt: string) => {
-                      const active = variants[v.name] === opt;
+                    {v.options.map((opt) => {
+                      const active = variants[v.name] === opt.value;
                       return (
                         <button
-                          key={opt}
-                          onClick={() => setVariants((prev) => ({ ...prev, [v.name]: opt }))}
+                          key={opt.value}
+                          onClick={() => setVariants((prev) => ({ ...prev, [v.name]: opt.value }))}
                           className={`rounded-lg border px-3.5 py-2 text-sm font-medium transition ${
                             active
                               ? "border-[var(--brand)] bg-[var(--brand)] text-white shadow-[var(--shadow-brand)]"
                               : "border-border bg-background hover:border-foreground/40"
                           }`}
                         >
-                          {opt}
+                          {opt.value}
                         </button>
                       );
                     })}
@@ -153,7 +168,7 @@ function ProductPage() {
               </button>
             </div>
             <button
-              onClick={() => add(product, variants, qty)}
+              onClick={() => add({ ...product, price: currentPrice }, variants, qty)}
               className="inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-lg bg-[var(--brand)] px-6 text-sm font-semibold text-white shadow-[var(--shadow-brand)] transition hover:brightness-110 active:scale-[0.98]"
             >
               <ShoppingBag className="h-4 w-4" />

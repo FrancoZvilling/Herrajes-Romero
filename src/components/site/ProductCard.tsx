@@ -9,9 +9,25 @@ export function ProductCard({ product }: { product: Product }) {
   const { add } = useCart();
   const [variants, setVariants] = useState<Record<string, string>>(() => {
     const init: Record<string, string> = {};
-    product.variants?.forEach((v) => (init[v.name] = v.options[0]));
+    product.variants?.forEach((v) => (init[v.name] = v.options[0]?.value));
     return init;
   });
+
+  const currentPrice = useMemo(() => {
+    let price = product.price;
+    // Find if any selected variant option has a specific price
+    if (product.variants) {
+      for (const v of product.variants) {
+        const selectedVal = variants[v.name];
+        const opt = v.options.find(o => o.value === selectedVal);
+        if (opt && opt.price !== undefined && opt.price !== null) {
+          price = opt.price;
+          break; // First one wins
+        }
+      }
+    }
+    return price;
+  }, [product, variants]);
 
   const initials = useMemo(
     () => product.name.split(" ").slice(0, 2).map((w) => w[0]).join("").toUpperCase(),
@@ -75,18 +91,18 @@ export function ProductCard({ product }: { product: Product }) {
                 </div>
                 <div className="flex flex-wrap gap-1">
                   {v.options.slice(0, 4).map((opt) => {
-                    const active = variants[v.name] === opt;
+                    const active = variants[v.name] === opt.value;
                     return (
                       <button
-                        key={opt}
-                        onClick={() => setVariants((prev) => ({ ...prev, [v.name]: opt }))}
+                        key={opt.value}
+                        onClick={() => setVariants((prev) => ({ ...prev, [v.name]: opt.value }))}
                         className={`rounded-md border px-2 py-1 text-[11px] font-medium transition ${
                           active
                             ? "border-[var(--brand)] bg-[var(--brand)] text-white"
                             : "border-border bg-background text-foreground/70 hover:border-foreground/40"
                         }`}
                       >
-                        {opt}
+                        {opt.value}
                       </button>
                     );
                   })}
@@ -110,11 +126,11 @@ export function ProductCard({ product }: { product: Product }) {
               Precio
             </div>
             <div className="font-display text-xl font-bold text-foreground">
-              {formatARS(product.price)}
+              {formatARS(currentPrice)}
             </div>
           </div>
           <button
-            onClick={() => add(product, variants)}
+            onClick={() => add({ ...product, price: currentPrice }, variants)}
             className="inline-flex h-10 items-center justify-center gap-1.5 rounded-md bg-foreground px-3 text-xs font-semibold text-background transition hover:bg-[var(--brand)] active:scale-95"
           >
             <ShoppingBag className="h-4 w-4" />

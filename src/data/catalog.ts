@@ -1,9 +1,14 @@
 // Casa Romero Herrajes - Catálogo simulado
 // Estructura escalable: cada categoría contiene productos con variantes opcionales.
 
+export type VariantOption = {
+  value: string;
+  price?: number;
+};
+
 export type VariantGroup = {
-  name: string; // ej "Material", "Medida"
-  options: string[];
+  name: string;
+  options: VariantOption[];
 };
 
 export type Product = {
@@ -15,6 +20,7 @@ export type Product = {
   brand?: string;
   price: number;
   description: string;
+  imageUrl?: string;
   variants?: VariantGroup[];
   featured?: boolean;
   stock?: number;
@@ -139,8 +145,8 @@ export const products: Product[] = [
     price: 18500, featured: true, stock: 24,
     description: "Manija doble balancín para puerta de acceso. Mecanismo robusto, terminación premium.",
     variants: [
-      { name: "Material", options: ["Bronce", "Aluminio", "Acero Inoxidable", "Hierro Forjado"] },
-      { name: "Acabado", options: ["Pulido", "Mate", "Envejecido"] },
+      { name: "Material", options: [{ value: "Bronce" }, { value: "Aluminio" }, { value: "Acero Inoxidable" }, { value: "Hierro Forjado" }] },
+      { name: "Acabado", options: [{ value: "Pulido" }, { value: "Mate" }, { value: "Envejecido" }] },
     ],
   }),
   mk({
@@ -148,7 +154,7 @@ export const products: Product[] = [
     category: "linea-puerta", subcategory: "Manijas", brand: "Prive",
     price: 14200, stock: 40,
     description: "Manija giratoria de diseño recto minimalista.",
-    variants: [{ name: "Material", options: ["Bronce", "Aluminio", "Acero Inoxidable"] }],
+    variants: [{ name: "Material", options: [{ value: "Bronce" }, { value: "Aluminio" }, { value: "Acero Inoxidable" }] }],
   }),
   mk({
     name: "Manijón para Puerta",
@@ -156,8 +162,8 @@ export const products: Product[] = [
     price: 26900, featured: true, stock: 18,
     description: "Manijón de gran porte, ideal para puertas de entrada de madera maciza.",
     variants: [
-      { name: "Material", options: ["Hierro Forjado", "Bronce", "Acero Inoxidable", "Aluminio"] },
-      { name: "Largo", options: ["30 cm", "45 cm", "60 cm", "90 cm"] },
+      { name: "Material", options: [{ value: "Hierro Forjado" }, { value: "Bronce" }, { value: "Acero Inoxidable" }, { value: "Aluminio" }] },
+      { name: "Largo", options: [{ value: "30 cm" }, { value: "45 cm" }, { value: "60 cm" }, { value: "90 cm" }] },
     ],
   }),
   mk({
@@ -165,14 +171,14 @@ export const products: Product[] = [
     category: "linea-puerta", subcategory: "Accesorios", brand: "Bronzen",
     price: 3200, stock: 120,
     description: "Bocallave para cerradura de embutir, terminación uniforme.",
-    variants: [{ name: "Acabado", options: ["Bronce", "Cromo", "Negro Mate"] }],
+    variants: [{ name: "Acabado", options: [{ value: "Bronce" }, { value: "Cromo" }, { value: "Negro Mate" }] }],
   }),
   mk({
     name: "Pomo Doble Balancín",
     category: "linea-puerta", subcategory: "Pomos", brand: "Prive",
     price: 9800, stock: 60,
     description: "Pomo doble balancín, funcionamiento suave.",
-    variants: [{ name: "Tipo", options: ["Doble Balancín", "Giratorio", "Fijo"] }],
+    variants: [{ name: "Tipo", options: [{ value: "Doble Balancín" }, { value: "Giratorio" }, { value: "Fijo" }] }],
   }),
   mk({
     name: "Sistema Libre / Ocupado",
@@ -186,8 +192,8 @@ export const products: Product[] = [
     price: 2100, stock: 200,
     description: "Bisagra de acero reforzada. Venta por unidad.",
     variants: [
-      { name: "Instalación", options: ["Para Soldar", "Para Atornillar"] },
-      { name: "Medida", options: ['2"', '2½"', '3"', '4"'] },
+      { name: "Instalación", options: [{ value: "Para Soldar" }, { value: "Para Atornillar" }] },
+      { name: "Medida", options: [{ value: '2"' }, { value: '2½"' }, { value: '3"' }, { value: '4"' }] },
     ],
   }),
   mk({
@@ -195,7 +201,7 @@ export const products: Product[] = [
     category: "linea-puerta", subcategory: "Cierrapuertas", brand: "Sica",
     price: 34500, featured: true, stock: 12,
     description: "Cierrapuerta hidráulico regulable, ideal para tránsito medio-alto.",
-    variants: [{ name: "Fuerza", options: ["60N", "80N", "100N", "120N"] }],
+    variants: [{ name: "Fuerza", options: [{ value: "60N" }, { value: "80N" }, { value: "100N" }, { value: "120N" }] }],
   }),
   mk({
     name: "Mirilla Panorámica",
@@ -211,8 +217,8 @@ export const products: Product[] = [
     price: 12800, featured: true, stock: 40,
     description: "Rueda maciza de acero para portones corredizos pesados.",
     variants: [
-      { name: "Diámetro", options: ["80 mm", "100 mm", "120 mm", "150 mm"] },
-      { name: "Soporte", options: ["Con Soporte", "Sin Soporte"] },
+      { name: "Diámetro", options: [{ value: "80 mm" }, { value: "100 mm" }, { value: "120 mm" }, { value: "150 mm" }] },
+      { name: "Soporte", options: [{ value: "Con Soporte" }, { value: "Sin Soporte" }] },
     ],
   }),
   mk({
@@ -220,14 +226,14 @@ export const products: Product[] = [
     category: "linea-porton", subcategory: "Cremalleras", brand: "MR",
     price: 18500, stock: 25,
     description: "Cremallera de acero para motorización de portón corredizo.",
-    variants: [{ name: "Largo", options: ["1 m", "2 m"] }],
+    variants: [{ name: "Largo", options: [{ value: "1 m" }, { value: "2 m" }] }],
   }),
   mk({
     name: "Pasador Herrero",
     category: "linea-porton", subcategory: "Pasadores", brand: "Currao",
     price: 5600, stock: 90,
     description: "Pasador de portón, reforzado.",
-    variants: [{ name: "Instalación", options: ["Para Soldar", "Para Atornillar"] }],
+    variants: [{ name: "Instalación", options: [{ value: "Para Soldar" }, { value: "Para Atornillar" }] }],
   }),
   mk({
     name: "Estabilizador de Portón",
@@ -243,8 +249,8 @@ export const products: Product[] = [
     price: 1450, featured: true, stock: 300,
     description: "Ménsula clásica en L para estantes de madera o vidrio.",
     variants: [
-      { name: "Medida", options: ["15 cm", "20 cm", "25 cm", "30 cm", "40 cm"] },
-      { name: "Color", options: ["Blanco", "Negro", "Zincado"] },
+      { name: "Medida", options: [{ value: "15 cm" }, { value: "20 cm" }, { value: "25 cm" }, { value: "30 cm" }, { value: "40 cm" }] },
+      { name: "Color", options: [{ value: "Blanco" }, { value: "Negro" }, { value: "Zincado" }] },
     ],
   }),
   mk({
@@ -252,14 +258,14 @@ export const products: Product[] = [
     category: "mensulas", subcategory: "Microondas", brand: "Sidañez Herrajes",
     price: 8200, stock: 45,
     description: "Set completo para colgar microondas. Capacidad hasta 40 kg.",
-    variants: [{ name: "Color", options: ["Blanco", "Negro"] }],
+    variants: [{ name: "Color", options: [{ value: "Blanco" }, { value: "Negro" }] }],
   }),
   mk({
     name: "Ménsula Aire Acondicionado Reforzada",
     category: "mensulas", subcategory: "Aire Acondicionado", brand: "FC Metalúrgica",
     price: 11500, featured: true, stock: 60,
     description: "Ménsula para split hasta 6000 frigorías.",
-    variants: [{ name: "Tipo", options: ["Reforzado Blanco", "Intermedio Zincado"] }],
+    variants: [{ name: "Tipo", options: [{ value: "Reforzado Blanco" }, { value: "Intermedio Zincado" }] }],
   }),
   mk({
     name: "Riel para Ménsula",
@@ -267,8 +273,8 @@ export const products: Product[] = [
     price: 3200, stock: 120,
     description: "Riel de pared para sistema modular de estantes.",
     variants: [
-      { name: "Largo", options: ["0.50 m", "1 m", "1.50 m", "2 m"] },
-      { name: "Color", options: ["Blanco", "Negro"] },
+      { name: "Largo", options: [{ value: "0.50 m" }, { value: "1 m" }, { value: "1.50 m" }, { value: "2 m" }] },
+      { name: "Color", options: [{ value: "Blanco" }, { value: "Negro" }] },
     ],
   }),
   mk({
@@ -276,7 +282,7 @@ export const products: Product[] = [
     category: "mensulas", subcategory: "Rebatibles", brand: "Sidañez Herrajes",
     price: 6400, stock: 40,
     description: "Ménsula rebatible color blanco.",
-    variants: [{ name: "Medida", options: ["20 cm", "25 cm", "30 cm", "35 cm", "47 cm"] }],
+    variants: [{ name: "Medida", options: [{ value: "20 cm" }, { value: "25 cm" }, { value: "30 cm" }, { value: "35 cm" }, { value: "47 cm" }] }],
   }),
   mk({
     name: "Ménsula Elevable 41 cm",
@@ -297,7 +303,7 @@ export const products: Product[] = [
     category: "perchas", subcategory: "Autoadhesivas", brand: "Simeplast",
     price: 1200, featured: true, stock: 250,
     description: "Percha autoadhesiva, no requiere tornillos.",
-    variants: [{ name: "Color", options: ["Blanco", "Negro", "Cromo"] }],
+    variants: [{ name: "Color", options: [{ value: "Blanco" }, { value: "Negro" }, { value: "Cromo" }] }],
   }),
   mk({
     name: "Perchero Armado 5 Ganchos",
@@ -312,7 +318,7 @@ export const products: Product[] = [
     category: "linea-mueble", subcategory: "Tiradores", brand: "Currao",
     price: 850, featured: true, stock: 500,
     description: "Tirador de madera para muebles de cocina y placar.",
-    variants: [{ name: "Medida", options: ["64 mm", "96 mm", "128 mm"] }],
+    variants: [{ name: "Medida", options: [{ value: "64 mm" }, { value: "96 mm" }, { value: "128 mm" }] }],
   }),
   mk({
     name: "Manija Plástica Muebles",
@@ -320,8 +326,8 @@ export const products: Product[] = [
     price: 480, stock: 800,
     description: "Manija plástica para muebles.",
     variants: [
-      { name: "Medida", options: ["32 mm", "64 mm", "96 mm", "128 mm", "160 mm", "192 mm", "224 mm", "256 mm", "320 mm"] },
-      { name: "Color", options: ["Negro", "Blanco", "Cromo", "Bronce"] },
+      { name: "Medida", options: [{ value: "32 mm" }, { value: "64 mm" }, { value: "96 mm" }, { value: "128 mm" }, { value: "160 mm" }, { value: "192 mm" }, { value: "224 mm" }, { value: "256 mm" }, { value: "320 mm" }] },
+      { name: "Color", options: [{ value: "Negro" }, { value: "Blanco" }, { value: "Cromo" }, { value: "Bronce" }] },
     ],
   }),
   mk({
@@ -330,9 +336,9 @@ export const products: Product[] = [
     price: 1350, featured: true, stock: 400,
     description: "Bisagra cazoleta con cierre suave.",
     variants: [
-      { name: "Diámetro", options: ["26 mm", "35 mm"] },
-      { name: "Ángulo", options: ["90°", "165°"] },
-      { name: "Forma", options: ["Redonda", "Cuadrada"] },
+      { name: "Diámetro", options: [{ value: "26 mm" }, { value: "35 mm" }] },
+      { name: "Ángulo", options: [{ value: "90°" }, { value: "165°" }] },
+      { name: "Forma", options: [{ value: "Redonda" }, { value: "Cuadrada" }] },
     ],
   }),
   mk({
@@ -340,7 +346,7 @@ export const products: Product[] = [
     category: "linea-mueble", subcategory: "Bisagras", brand: "FC Metalúrgica",
     price: 620, stock: 350,
     description: "Bisagra tipo libro.",
-    variants: [{ name: "Medida", options: ["25 mm", "38 mm", "50 mm", "63 mm", "75 mm"] }],
+    variants: [{ name: "Medida", options: [{ value: "25 mm" }, { value: "38 mm" }, { value: "50 mm" }, { value: "63 mm" }, { value: "75 mm" }] }],
   }),
   mk({
     name: "Corredera Telescópica Reforzada",
@@ -348,8 +354,8 @@ export const products: Product[] = [
     price: 4800, featured: true, stock: 90,
     description: "Corredera telescópica reforzada para cajones pesados.",
     variants: [
-      { name: "Largo", options: ["25 cm", "30 cm", "35 cm", "40 cm", "45 cm", "50 cm", "55 cm", "60 cm"] },
-      { name: "Tipo", options: ["Mini", "Reforzada"] },
+      { name: "Largo", options: [{ value: "25 cm" }, { value: "30 cm" }, { value: "35 cm" }, { value: "40 cm" }, { value: "45 cm" }, { value: "50 cm" }, { value: "55 cm" }, { value: "60 cm" }] },
+      { name: "Tipo", options: [{ value: "Mini" }, { value: "Reforzada" }] },
     ],
   }),
   mk({
@@ -357,7 +363,7 @@ export const products: Product[] = [
     category: "linea-mueble", subcategory: "Patas", brand: "Simeplast",
     price: 320, stock: 600,
     description: "Pata de mueble regulable en altura.",
-    variants: [{ name: "Material", options: ["Plástica", "Metálica"] }],
+    variants: [{ name: "Material", options: [{ value: "Plástica" }, { value: "Metálica" }] }],
   }),
   mk({
     name: "Regatón Plástico",
@@ -365,8 +371,8 @@ export const products: Product[] = [
     price: 180, stock: 1200,
     description: "Regatón plástico para patas de silla y mueble.",
     variants: [
-      { name: "Forma", options: ["Redondo", "Cuadrado", "Rectangular"] },
-      { name: "Medida", options: ['1/2"', '3/4"', '1"', '1¼"', '20 mm', '25 mm', '30 mm', '38 mm'] },
+      { name: "Forma", options: [{ value: "Redondo" }, { value: "Cuadrado" }, { value: "Rectangular" }] },
+      { name: "Medida", options: [{ value: '1/2"' }, { value: '3/4"' }, { value: '1"' }, { value: '1¼"' }, { value: '20 mm' }, { value: '25 mm' }, { value: '30 mm' }, { value: '38 mm' }] },
     ],
   }),
   mk({
@@ -374,7 +380,7 @@ export const products: Product[] = [
     category: "linea-mueble", subcategory: "Brazos hidráulicos", brand: "Alce",
     price: 7200, stock: 70,
     description: "Brazo hidráulico para puertas rebatibles de alacena.",
-    variants: [{ name: "Fuerza", options: ["60N", "80N", "100N", "120N", "150N"] }],
+    variants: [{ name: "Fuerza", options: [{ value: "60N" }, { value: "80N" }, { value: "100N" }, { value: "120N" }, { value: "150N" }] }],
   }),
   mk({
     name: "Rueda con Freno",
@@ -382,8 +388,8 @@ export const products: Product[] = [
     price: 1800, stock: 250,
     description: "Rueda giratoria para muebles.",
     variants: [
-      { name: "Freno", options: ["Con Freno", "Sin Freno"] },
-      { name: "Diámetro", options: ["50 mm", "75 mm", "100 mm"] },
+      { name: "Freno", options: [{ value: "Con Freno" }, { value: "Sin Freno" }] },
+      { name: "Diámetro", options: [{ value: "50 mm" }, { value: "75 mm" }, { value: "100 mm" }] },
     ],
   }),
 
@@ -393,7 +399,7 @@ export const products: Product[] = [
     category: "linea-ventana", subcategory: "Fallebas", brand: "Kallay",
     price: 5400, featured: true, stock: 60,
     description: "Falleba embutida para ventanas de madera.",
-    variants: [{ name: "Medida", options: ["12 mm", "18 mm"] }],
+    variants: [{ name: "Medida", options: [{ value: "12 mm" }, { value: "18 mm" }] }],
   }),
   mk({
     name: "Varilla para Falleba",
@@ -401,8 +407,8 @@ export const products: Product[] = [
     price: 2100, stock: 150,
     description: "Varilla de acero para falleba.",
     variants: [
-      { name: "Diámetro", options: ["12 mm", "18 mm"] },
-      { name: "Largo", options: ["1 m", "1.20 m", "1.50 m", "1.80 m", "2 m"] },
+      { name: "Diámetro", options: [{ value: "12 mm" }, { value: "18 mm" }] },
+      { name: "Largo", options: [{ value: "1 m" }, { value: "1.20 m" }, { value: "1.50 m" }, { value: "1.80 m" }, { value: "2 m" }] },
     ],
   }),
   mk({
@@ -411,8 +417,8 @@ export const products: Product[] = [
     price: 3800, stock: 120,
     description: "Brazo de empuje para ventana corrediza.",
     variants: [
-      { name: "Material", options: ["Madera", "Chapa", "Aluminio"] },
-      { name: "Medida", options: ["25 cm", "30 cm", "40 cm", "50 cm"] },
+      { name: "Material", options: [{ value: "Madera" }, { value: "Chapa" }, { value: "Aluminio" }] },
+      { name: "Medida", options: [{ value: "25 cm" }, { value: "30 cm" }, { value: "40 cm" }, { value: "50 cm" }] },
     ],
   }),
   mk({
@@ -426,7 +432,7 @@ export const products: Product[] = [
     category: "linea-ventana", subcategory: "Caños y barrales", brand: "Currao",
     price: 4200, stock: 80,
     description: "Barral de madera para cortinas.",
-    variants: [{ name: "Perfil", options: ["Oval", "Redondo"] }],
+    variants: [{ name: "Perfil", options: [{ value: "Oval" }, { value: "Redondo" }] }],
   }),
 
   // CORTINA DE ENROLLAR
@@ -435,21 +441,21 @@ export const products: Product[] = [
     category: "cortinas-enrollar", subcategory: "Enrolladores", brand: "MR",
     price: 8400, featured: true, stock: 55,
     description: "Enrollador reforzado para cortinas grandes.",
-    variants: [{ name: "Tipo", options: ["Común", "Reforzado"] }],
+    variants: [{ name: "Tipo", options: [{ value: "Común" }, { value: "Reforzado" }] }],
   }),
   mk({
     name: "Polea de Cortina",
     category: "cortinas-enrollar", subcategory: "Poleas", brand: "MR",
     price: 3200, stock: 90,
     description: "Polea metálica para cortina de enrollar.",
-    variants: [{ name: "Tipo", options: ["Común", "Reforzada"] }],
+    variants: [{ name: "Tipo", options: [{ value: "Común" }, { value: "Reforzada" }] }],
   }),
   mk({
     name: "Reductor 3:1",
     category: "cortinas-enrollar", subcategory: "Aparatos", brand: "MR",
     price: 5800, stock: 40,
     description: "Reductor para cortinas pesadas.",
-    variants: [{ name: "Relación", options: ["3:1", "4:1"] }],
+    variants: [{ name: "Relación", options: [{ value: "3:1" }, { value: "4:1" }] }],
   }),
   mk({
     name: "Cinta para Cortina",
@@ -464,14 +470,14 @@ export const products: Product[] = [
     category: "sistema-corredizo", subcategory: "Kits", brand: "MR",
     price: 24500, featured: true, stock: 15,
     description: "Kit completo para armar sistema corredizo D52.",
-    variants: [{ name: "Modelo", options: ["D52", "Colgante Simple", "Colgante Doble", "Pliru", "MR PLUS"] }],
+    variants: [{ name: "Modelo", options: [{ value: "D52" }, { value: "Colgante Simple" }, { value: "Colgante Doble" }, { value: "Pliru" }, { value: "MR PLUS" }] }],
   }),
   mk({
     name: "Guía Superior Doble J",
     category: "sistema-corredizo", subcategory: "Guías", brand: "MR",
     price: 6800, stock: 30,
     description: "Guía superior para sistema corredizo.",
-    variants: [{ name: "Modelo", options: ["Doble J", "Riel D52", "Pliru", "168", "164"] }],
+    variants: [{ name: "Modelo", options: [{ value: "Doble J" }, { value: "Riel D52" }, { value: "Pliru" }, { value: "168" }, { value: "164" }] }],
   }),
 
   // PEGAMENTOS
@@ -492,7 +498,7 @@ export const products: Product[] = [
     category: "pegamentos", subcategory: "Epóxicos",
     price: 2800, stock: 180,
     description: "Adhesivo epoxi de curado rápido.",
-    variants: [{ name: "Color", options: ["Transparente", "Metálico"] }],
+    variants: [{ name: "Color", options: [{ value: "Transparente" }, { value: "Metálico" }] }],
   }),
 
   // TORNILLERÍA
@@ -502,8 +508,8 @@ export const products: Product[] = [
     price: 4800, featured: true, stock: 60,
     description: "Caja x 100 unidades. Tornillo autoperforante dorado.",
     variants: [
-      { name: "Diámetro", options: ["Ø 2.5", "Ø 3", "Ø 3.5", "Ø 4", "Ø 5", "Ø 6"] },
-      { name: "Largo", options: ["12 mm", "16 mm", "20 mm", "25 mm", "30 mm", "40 mm", "50 mm"] },
+      { name: "Diámetro", options: [{ value: "Ø 2.5" }, { value: "Ø 3" }, { value: "Ø 3.5" }, { value: "Ø 4" }, { value: "Ø 5" }, { value: "Ø 6" }] },
+      { name: "Largo", options: [{ value: "12 mm" }, { value: "16 mm" }, { value: "20 mm" }, { value: "25 mm" }, { value: "30 mm" }, { value: "40 mm" }, { value: "50 mm" }] },
     ],
   }),
   mk({
@@ -517,7 +523,7 @@ export const products: Product[] = [
     category: "tornilleria", subcategory: "Tacos",
     price: 2900, stock: 100,
     description: "Caja x 100 unidades.",
-    variants: [{ name: "Medida", options: ["S6", "S8", "S10", "S12"] }],
+    variants: [{ name: "Medida", options: [{ value: "S6" }, { value: "S8" }, { value: "S10" }, { value: "S12" }] }],
   }),
 
   // LÍNEA SEGURIDAD
@@ -532,14 +538,14 @@ export const products: Product[] = [
     category: "linea-seguridad", subcategory: "Candados", brand: "Bronzen",
     price: 8400, stock: 45,
     description: "Candado de bronce macizo.",
-    variants: [{ name: "Marca", options: ["Prive", "Bulit", "Bronzen"] }, { name: "Medida", options: ["40 mm", "50 mm", "60 mm", "70 mm"] }],
+    variants: [{ name: "Marca", options: [{ value: "Prive" }, { value: "Bulit" }, { value: "Bronzen" }] }, { name: "Medida", options: [{ value: "40 mm" }, { value: "50 mm" }, { value: "60 mm" }, { value: "70 mm" }] }],
   }),
   mk({
     name: "Pasador de Embutir",
     category: "linea-seguridad", subcategory: "Pasadores",
     price: 3200, stock: 70,
     description: "Pasador de embutir para puerta.",
-    variants: [{ name: "Material", options: ["Madera", "Chapa"] }],
+    variants: [{ name: "Material", options: [{ value: "Madera" }, { value: "Chapa" }] }],
   }),
 
   // ELECTRICIDAD
@@ -548,7 +554,7 @@ export const products: Product[] = [
     category: "electricidad", subcategory: "Térmicas",
     price: 5600, featured: true, stock: 50,
     description: "Llave termomagnética bipolar.",
-    variants: [{ name: "Amperaje", options: ["10A", "16A", "20A", "25A", "32A"] }],
+    variants: [{ name: "Amperaje", options: [{ value: "10A" }, { value: "16A" }, { value: "20A" }, { value: "25A" }, { value: "32A" }] }],
   }),
   mk({
     name: "Enchufe Schuko",
@@ -561,7 +567,7 @@ export const products: Product[] = [
     category: "electricidad", subcategory: "Lámparas",
     price: 2800, stock: 150,
     description: "Lámpara LED bajo consumo E27.",
-    variants: [{ name: "Temperatura", options: ["Cálida", "Fría", "Neutra"] }],
+    variants: [{ name: "Temperatura", options: [{ value: "Cálida" }, { value: "Fría" }, { value: "Neutra" }] }],
   }),
 ];
 
