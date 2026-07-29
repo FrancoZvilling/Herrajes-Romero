@@ -270,8 +270,16 @@ export function ProductFormModal({ product, onClose }: { product: any; onClose: 
                     <div className="flex flex-col gap-3 mb-4">
                       {variant.options.map((opt, oIdx) => (
                         <div key={oIdx} className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-lg bg-[var(--surface-muted)] p-3">
-                          <div className="flex items-center gap-3">
-                            <span className="font-semibold">{opt.value}</span>
+                          <div className="flex items-center gap-3 flex-1">
+                            <Input 
+                              value={opt.value}
+                              onChange={(e) => {
+                                const updated = [...variants];
+                                updated[vIdx].options[oIdx].value = e.target.value;
+                                setVariants(updated);
+                              }}
+                              className="h-8 font-semibold"
+                            />
                           </div>
                           
                           <div className="flex items-center gap-4">

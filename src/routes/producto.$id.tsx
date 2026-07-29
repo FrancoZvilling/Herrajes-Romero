@@ -47,6 +47,8 @@ function ProductPage() {
     return init;
   });
 
+  const [observation, setObservation] = useState("");
+
   const currentPrice = useMemo(() => {
     let price = product.price;
     if (product.variants) {
@@ -157,6 +159,21 @@ function ProductPage() {
             </div>
           )}
 
+          {/* Observaciones */}
+          <div className="mt-8">
+            <label htmlFor="observations" className="mb-2 block text-xs font-bold uppercase tracking-widest text-foreground">
+              Observaciones / Aclaraciones
+            </label>
+            <textarea
+              id="observations"
+              rows={2}
+              value={observation}
+              onChange={(e) => setObservation(e.target.value)}
+              placeholder="Ej: Prefiero en color negro brillante, o necesito medida especial..."
+              className="w-full resize-none rounded-lg border border-border bg-background px-4 py-3 text-sm transition focus:border-[var(--brand)] focus:outline-none focus:ring-1 focus:ring-[var(--brand)]"
+            />
+          </div>
+
           <div className="mt-8 flex flex-wrap items-stretch gap-3">
             <div className="inline-flex items-center rounded-lg border border-border">
               <button onClick={() => setQty((q) => Math.max(1, q - 1))} className="flex h-12 w-12 items-center justify-center transition hover:bg-[var(--surface-muted)]">
@@ -168,7 +185,10 @@ function ProductPage() {
               </button>
             </div>
             <button
-              onClick={() => add({ ...product, price: currentPrice }, variants, qty)}
+              onClick={() => {
+                add({ ...product, price: currentPrice }, variants, qty, observation);
+                setObservation("");
+              }}
               className="inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-lg bg-[var(--brand)] px-6 text-sm font-semibold text-white shadow-[var(--shadow-brand)] transition hover:brightness-110 active:scale-[0.98]"
             >
               <ShoppingBag className="h-4 w-4" />

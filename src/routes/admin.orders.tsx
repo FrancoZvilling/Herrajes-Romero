@@ -181,6 +181,11 @@ function AdminOrders() {
                               {item.variantLabel}
                             </p>
                           )}
+                          {item.observation && (
+                            <p className="mt-1 text-xs font-semibold text-[var(--brand)]">
+                              Nota: {item.observation}
+                            </p>
+                          )}
                           <p className="text-xs text-muted-foreground mt-1">
                             {item.qty} x {formatARS(item.price)}
                           </p>

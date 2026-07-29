@@ -8,11 +8,12 @@ export type CartItem = {
   qty: number;
   variantKey: string; // "Material:Bronce|Medida:30cm"
   variantLabel: string;
+  observation?: string;
 };
 
 type CartCtx = {
   items: CartItem[];
-  add: (product: Product, variants: Record<string, string>, qty?: number) => void;
+  add: (product: Product, variants: Record<string, string>, qty?: number, observation?: string) => void;
   remove: (productId: string, variantKey: string) => void;
   updateQty: (productId: string, variantKey: string, qty: number) => void;
   clear: () => void;
@@ -47,15 +48,18 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, [items, hydrated]);
 
   const value = useMemo<CartCtx>(() => {
-    const variantKeyOf = (v: Record<string, string>) =>
-      Object.entries(v).map(([k, val]) => `${k}:${val}`).join("|");
+    const variantKeyOf = (v: Record<string, string>, obs?: string) => {
+      let key = Object.entries(v).map(([k, val]) => `${k}:${val}`).join("|");
+      if (obs) key += `|obs:${obs}`;
+      return key;
+    };
 
     return {
       items,
       isOpen,
       setOpen,
-      add: (product, variants, qty = 1) => {
-        const key = variantKeyOf(variants);
+      add: (product, variants, qty = 1, observation = "") => {
+        const key = variantKeyOf(variants, observation);
         const label = Object.entries(variants).map(([k, v]) => `${k}: ${v}`).join(" · ");
         setItems((prev) => {
           const idx = prev.findIndex((i) => i.productId === product.id && i.variantKey === key);
@@ -66,7 +70,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
           }
           return [
             ...prev,
-            { productId: product.id, name: product.name, price: product.price, qty, variantKey: key, variantLabel: label },
+            { productId: product.id, name: product.name, price: product.price, qty, variantKey: key, variantLabel: label, observation },
           ];
         });
         setOpen(true);
