@@ -73,13 +73,17 @@ function Home() {
               transition={{ duration: 0.5, delay: 0.25 }}
               className="mt-8 flex flex-wrap gap-3"
             >
-              <Link
-                to="/categoria/$slug" params={{ slug: "linea-puerta" }}
+              <a
+                href="#categorias"
+                onClick={(e) => {
+                  e.preventDefault();
+                  document.getElementById('categorias')?.scrollIntoView({ behavior: 'smooth' });
+                }}
                 className="group inline-flex items-center gap-2 rounded-lg bg-[var(--brand)] px-6 py-3.5 text-sm font-semibold text-white shadow-[var(--shadow-brand)] transition hover:brightness-110 active:scale-[0.98]"
               >
                 Ver catálogo
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-              </Link>
+              </a>
               <Link
                 to="/contacto"
                 className="inline-flex items-center gap-2 rounded-lg border border-white/20 bg-white/5 px-6 py-3.5 text-sm font-semibold text-white backdrop-blur transition hover:bg-white/10"
@@ -108,7 +112,7 @@ function Home() {
       </section>
 
       {/* Categories */}
-      <section className="relative overflow-hidden bg-[#0a0a0a] text-white py-24 border-y border-white/5">
+      <section id="categorias" className="relative overflow-hidden bg-[#0a0a0a] text-white py-24 border-y border-white/5">
         {/* UNIQUE BACKGROUND TEXTURE & ANIMATION */}
         <div className="absolute inset-0 z-0">
           {/* Tech/Hardware pattern texture in orange */}
