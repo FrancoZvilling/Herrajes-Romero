@@ -97,46 +97,22 @@ function CheckoutPage() {
       // 2. Limpiar carrito local
       clear();
       
-      // 3. Generar mensaje de WhatsApp y redirigir
-      const methodMap: Record<string, string> = {
-        acordar: "Acordar con el vendedor (Retiro en local)",
-        andreani: "Andreani",
-        viacargo: "Vía Cargo",
-        uber: "Uber Entregas"
-      };
-
-      let msg = `*¡Hola Casa Romero! Acabo de realizar un nuevo pedido.*\n`;
-      msg += `*ID del Pedido:* #${orderRef.id.substring(0, 6).toUpperCase()}\n\n`;
-      
-      msg += `*📦 DETALLE DEL PEDIDO*\n`;
-      items.forEach(i => {
-        msg += `- ${i.qty}x ${i.name}\n`;
-        if (i.variantLabel) {
-          msg += `  _${i.variantLabel}_\n`;
-        }
-        if (i.observation) {
-          msg += `  *Nota:* ${i.observation}\n`;
+      // 3. Crear preferencia de pago de Mercado Pago
+      const baseUrl = window.location.origin;
+      const { init_point } = await createPreferenceFn({
+        data: {
+          orderId: orderRef.id,
+          customer: formData,
+          items: items,
+          baseUrl
         }
       });
-      msg += `\n*TOTAL:* ${formatARS(total)}\n\n`;
-      
-      msg += `*👤 DATOS DEL CLIENTE*\n`;
-      msg += `- Nombre: ${formData.nombre} ${formData.apellido}\n`;
-      msg += `- DNI/CUIT: ${formData.dni}\n`;
-      msg += `- Email: ${formData.email}\n`;
-      
-      msg += `\n*🚚 DATOS DE ENTREGA*\n`;
-      msg += `- Método: ${methodMap[formData.metodoEnvio] || formData.metodoEnvio}\n`;
-      if (formData.metodoEnvio !== "acordar") {
-        msg += `- Dirección: ${formData.direccion}\n`;
-        msg += `- Ciudad: ${formData.ciudad}, ${formData.provincia}\n`;
-        msg += `- C.P.: ${formData.codigoPostal}\n`;
+
+      if (init_point) {
+        window.location.href = init_point;
+      } else {
+        throw new Error("No se recibió el init_point de Mercado Pago");
       }
-      
-      msg += `\n_Espero instrucciones para avanzar con el pago y envío. ¡Muchas gracias!_`;
-      
-      const whatsappUrl = `https://wa.me/5493513468100?text=${encodeURIComponent(msg)}`;
-      window.location.href = whatsappUrl;
       
     } catch (error) {
       console.error("Error al procesar el pedido:", error);
