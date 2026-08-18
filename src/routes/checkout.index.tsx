@@ -196,7 +196,7 @@ function CheckoutPage() {
                 <label className="mb-1 block text-sm font-medium">Método de Envío / Retiro</label>
                 <select name="metodoEnvio" value={formData.metodoEnvio} onChange={handleChange} className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:border-[var(--brand)] focus:outline-none focus:ring-1 focus:ring-[var(--brand)]">
                   <option value="acordar">Acordar con el vendedor (Retiro en local)</option>
-                  <option value="andreani">Andreani (Pago en destino)</option>
+                  <option value="viacargo">Vía Cargo (Pago en destino)</option>
                   <option value="uber">Uber Entregas (Solo Córdoba - Pago en destino)</option>
                 </select>
               </div>
