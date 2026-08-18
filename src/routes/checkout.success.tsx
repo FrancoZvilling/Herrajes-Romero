@@ -65,11 +65,12 @@ function CheckoutSuccessPage() {
           if (data.customer.metodoEnvio !== "acordar") {
             msg += `- Dirección: ${data.customer.direccion}\n`;
             msg += `- Ciudad: ${data.customer.ciudad}, ${data.customer.provincia}\n`;
+            msg += `- C.P.: ${data.customer.codigoPostal}\n`;
           }
           
           msg += `\n_¡Ya está pago y listo para despachar!_`;
           
-          setWhatsappLink(`https://wa.me/5493513468100?text=${encodeURIComponent(msg)}`);
+          setWhatsappLink(`https://wa.me/5493517010095?text=${encodeURIComponent(msg)}`);
         }
       } catch (err) {
         console.error("Error fetching order:", err);

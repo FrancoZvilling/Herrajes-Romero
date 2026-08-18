@@ -196,31 +196,35 @@ function CheckoutPage() {
                 <label className="mb-1 block text-sm font-medium">Método de Envío / Retiro</label>
                 <select name="metodoEnvio" value={formData.metodoEnvio} onChange={handleChange} className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:border-[var(--brand)] focus:outline-none focus:ring-1 focus:ring-[var(--brand)]">
                   <option value="acordar">Acordar con el vendedor (Retiro en local)</option>
-                  <option value="andreani">Andreani (Próximamente)</option>
-                  <option value="viacargo">Vía Cargo (Próximamente)</option>
-                  <option value="uber">Uber Entregas (Solo Córdoba)</option>
+                  <option value="andreani">Andreani (Pago en destino)</option>
+                  <option value="uber">Uber Entregas (Solo Córdoba - Pago en destino)</option>
                 </select>
               </div>
 
               {formData.metodoEnvio !== "acordar" && (
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  <div className="sm:col-span-2">
-                    <label className="mb-1 block text-sm font-medium">Dirección</label>
-                    <input required type="text" name="direccion" value={formData.direccion} onChange={handleChange} className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:border-[var(--brand)] focus:outline-none focus:ring-1 focus:ring-[var(--brand)]" />
+                <>
+                  <div className="mb-6 rounded-lg bg-orange-50 p-4 border border-orange-200 text-sm text-orange-800">
+                    <strong>Aclaración importante:</strong> El costo de envío <strong>corre por cuenta del comprador</strong> y deberá ser abonado al momento de recibir el paquete. Tené en cuenta que el valor del envío varía dependiendo de la distancia y el peso/volumen de los productos seleccionados.
                   </div>
-                  <div>
-                    <label className="mb-1 block text-sm font-medium">Ciudad</label>
-                    <input required type="text" name="ciudad" value={formData.ciudad} onChange={handleChange} className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:border-[var(--brand)] focus:outline-none focus:ring-1 focus:ring-[var(--brand)]" />
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <div className="sm:col-span-2">
+                      <label className="mb-1 block text-sm font-medium">Dirección</label>
+                      <input required type="text" name="direccion" value={formData.direccion} onChange={handleChange} className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:border-[var(--brand)] focus:outline-none focus:ring-1 focus:ring-[var(--brand)]" />
+                    </div>
+                    <div>
+                      <label className="mb-1 block text-sm font-medium">Ciudad</label>
+                      <input required type="text" name="ciudad" value={formData.ciudad} onChange={handleChange} className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:border-[var(--brand)] focus:outline-none focus:ring-1 focus:ring-[var(--brand)]" />
+                    </div>
+                    <div>
+                      <label className="mb-1 block text-sm font-medium">Provincia</label>
+                      <input required type="text" name="provincia" value={formData.provincia} onChange={handleChange} className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:border-[var(--brand)] focus:outline-none focus:ring-1 focus:ring-[var(--brand)]" />
+                    </div>
+                    <div className="sm:col-span-2">
+                      <label className="mb-1 block text-sm font-medium">Código Postal</label>
+                      <input required type="text" name="codigoPostal" value={formData.codigoPostal} onChange={handleChange} className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:border-[var(--brand)] focus:outline-none focus:ring-1 focus:ring-[var(--brand)]" />
+                    </div>
                   </div>
-                  <div>
-                    <label className="mb-1 block text-sm font-medium">Provincia</label>
-                    <input required type="text" name="provincia" value={formData.provincia} onChange={handleChange} className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:border-[var(--brand)] focus:outline-none focus:ring-1 focus:ring-[var(--brand)]" />
-                  </div>
-                  <div className="sm:col-span-2">
-                    <label className="mb-1 block text-sm font-medium">Código Postal</label>
-                    <input required type="text" name="codigoPostal" value={formData.codigoPostal} onChange={handleChange} className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:border-[var(--brand)] focus:outline-none focus:ring-1 focus:ring-[var(--brand)]" />
-                  </div>
-                </div>
+                </>
               )}
             </div>
 
