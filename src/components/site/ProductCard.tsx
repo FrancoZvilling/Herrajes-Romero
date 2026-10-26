@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { ShoppingBag, Package } from "lucide-react";
 import { useMemo, useState } from "react";
 import type { Product } from "@/data/catalog";
-import { useCart, formatARS } from "@/context/cart";
+import { useCart } from "@/context/cart";
 
 export function ProductCard({ product }: { product: Product }) {
   const { add } = useCart();
@@ -12,22 +12,6 @@ export function ProductCard({ product }: { product: Product }) {
     product.variants?.forEach((v) => (init[v.name] = v.options[0]?.value));
     return init;
   });
-
-  const currentPrice = useMemo(() => {
-    let price = product.price;
-    // Find if any selected variant option has a specific price
-    if (product.variants) {
-      for (const v of product.variants) {
-        const selectedVal = variants[v.name];
-        const opt = v.options.find(o => o.value === selectedVal);
-        if (opt && opt.price !== undefined && opt.price !== null) {
-          price = opt.price;
-          break; // First one wins
-        }
-      }
-    }
-    return price;
-  }, [product, variants]);
 
   const initials = useMemo(
     () => product.name.split(" ").slice(0, 2).map((w) => w[0]).join("").toUpperCase(),
@@ -120,18 +104,13 @@ export function ProductCard({ product }: { product: Product }) {
           </div>
         )}
 
-        <div className="mt-auto pt-4 flex items-end justify-between gap-2">
-          <div>
-            <div className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
-              Precio
-            </div>
-            <div className="font-display text-xl font-bold text-foreground">
-              {formatARS(currentPrice)}
-            </div>
-          </div>
+        <div className="mt-auto pt-4 flex items-center justify-between gap-2 border-t border-border/50">
+          <span className="text-xs font-medium text-muted-foreground">
+            Cotización a pedido
+          </span>
           <button
-            onClick={() => add({ ...product, price: currentPrice }, variants)}
-            className="inline-flex h-10 items-center justify-center gap-1.5 rounded-md bg-foreground px-3 text-xs font-semibold text-background transition hover:bg-[var(--brand)] active:scale-95"
+            onClick={() => add(product, variants)}
+            className="inline-flex h-9 items-center justify-center gap-1.5 rounded-lg bg-[var(--brand)] px-3 text-xs font-semibold text-white shadow-sm transition hover:brightness-110 active:scale-95"
           >
             <ShoppingBag className="h-4 w-4" />
             Agregar

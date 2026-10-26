@@ -53,7 +53,7 @@ function CategoryPage() {
 
   const [subFilter, setSubFilter] = useState<string | null>(null);
   const [brandFilter, setBrandFilter] = useState<string | null>(null);
-  const [sort, setSort] = useState<"featured" | "price-asc" | "price-desc" | "name">("featured");
+  const [sort, setSort] = useState<"featured" | "name">("featured");
   const [showMobile, setShowMobile] = useState(false);
 
   // Limpiar filtros al cambiar de categoría
@@ -67,8 +67,6 @@ function CategoryPage() {
     if (subFilter) list = list.filter((p) => p.subcategory === subFilter);
     if (brandFilter) list = list.filter((p) => p.brand === brandFilter);
     switch (sort) {
-      case "price-asc": list = [...list].sort((a, b) => a.price - b.price); break;
-      case "price-desc": list = [...list].sort((a, b) => b.price - a.price); break;
       case "name": list = [...list].sort((a, b) => a.name.localeCompare(b.name)); break;
       default: list = [...list].sort((a, b) => Number(b.featured ?? false) - Number(a.featured ?? false));
     }
@@ -233,8 +231,6 @@ function CategoryPage() {
                   className="rounded-md border border-border bg-background px-3 py-2 text-sm font-medium focus:border-[var(--brand)] focus:outline-none"
                 >
                   <option value="featured">Destacados</option>
-                  <option value="price-asc">Precio: menor a mayor</option>
-                  <option value="price-desc">Precio: mayor a menor</option>
                   <option value="name">Nombre A-Z</option>
                 </select>
               </div>

@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { ArrowRight, Award, ShieldCheck, Truck, Wrench } from "lucide-react";
+import { ArrowRight, Award, ShieldCheck, Truck, Wrench, Sparkles } from "lucide-react";
 import { useProducts, useCategories, useBrands } from "@/hooks/useCatalog";
 import { ProductCard } from "@/components/site/ProductCard";
 
@@ -220,14 +220,48 @@ function Home() {
               </h2>
             </div>
             <p className="hidden max-w-sm text-sm font-medium text-white/90 drop-shadow-md md:block">
-              Estos son los productos que más eligen nuestros clientes. Calidad y precio garantizados.
+              Estos son los productos que más eligen nuestros clientes. Calidad y variedad garantizadas.
             </p>
           </div>
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {featured.map((p) => (
-              <ProductCard key={p.id} product={p} />
-            ))}
-          </div>
+
+          {featured.length === 0 ? (
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4 }}
+              className="relative mx-auto max-w-xl overflow-hidden rounded-2xl border border-white/15 bg-black/35 p-10 text-center shadow-2xl backdrop-blur-md"
+            >
+              <div className="mx-auto mb-4 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-white/10 text-orange-300 shadow-inner border border-white/15">
+                <Sparkles className="h-8 w-8 text-orange-300 animate-pulse" />
+              </div>
+              <h3 className="font-display text-2xl font-bold text-white drop-shadow-sm">
+                No hay productos destacados por el momento
+              </h3>
+              <p className="mt-2 text-sm text-white/80 leading-relaxed max-w-md mx-auto">
+                Estamos renovando nuestra selección de artículos más pedidos. Te invitamos a explorar el catálogo completo o volver a consultar más adelante.
+              </p>
+              <div className="mt-6 flex justify-center">
+                <a
+                  href="#categorias"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    document.getElementById("categorias")?.scrollIntoView({ behavior: "smooth" });
+                  }}
+                  className="inline-flex items-center gap-2 rounded-lg bg-white/15 px-5 py-2.5 text-sm font-semibold text-white backdrop-blur border border-white/20 transition hover:bg-white/25 active:scale-95"
+                >
+                  Explorar catálogo de categorías
+                  <ArrowRight className="h-4 w-4" />
+                </a>
+              </div>
+            </motion.div>
+          ) : (
+            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {featured.map((p) => (
+                <ProductCard key={p.id} product={p} />
+              ))}
+            </div>
+          )}
         </div>
       </section>
 

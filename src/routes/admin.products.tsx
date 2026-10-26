@@ -1,14 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useProducts } from "@/hooks/useCatalog";
-import { formatARS } from "@/context/cart";
+import { useProducts, useCategories } from "@/hooks/useCatalog";
 import { useState } from "react";
-import { Plus, Search, Edit2, Trash2, Star } from "lucide-react";
+import { Plus, Search, Edit2, Trash2, Star, FileSpreadsheet } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { deleteDoc, doc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { ProductFormModal } from "@/components/admin/ProductFormModal";
 import { useQueryClient } from "@tanstack/react-query";
+import { exportCatalogToExcel } from "@/lib/exportCatalogExcel";
 
 export const Route = createFileRoute("/admin/products")({
   component: AdminProducts,
@@ -16,10 +16,28 @@ export const Route = createFileRoute("/admin/products")({
 
 function AdminProducts() {
   const { data: products = [], isLoading } = useProducts();
+  const { data: categories = [] } = useCategories();
   const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<any>(null);
+  const [isExporting, setIsExporting] = useState(false);
+
+  const handleExport = async () => {
+    if (products.length === 0) {
+      alert("No hay productos en el catálogo para exportar.");
+      return;
+    }
+    try {
+      setIsExporting(true);
+      await exportCatalogToExcel(products, categories);
+    } catch (error) {
+      console.error("Error exportando a Excel:", error);
+      alert("Hubo un error al generar el archivo Excel.");
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
   const filteredProducts = products.filter((p) => 
     p.name.toLowerCase().includes(search.toLowerCase()) || 
@@ -65,11 +83,28 @@ function AdminProducts() {
   return (
     <div>
       <div className="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-        <h1 className="font-display text-3xl font-bold tracking-tight">Productos</h1>
-        <Button onClick={handleCreate} className="bg-[var(--brand)] hover:bg-[var(--brand)]/90 gap-2">
-          <Plus className="h-4 w-4" />
-          Nuevo Producto
-        </Button>
+        <div>
+          <h1 className="font-display text-3xl font-bold tracking-tight">Productos</h1>
+          <p className="mt-1 text-xs text-muted-foreground">
+            {products.length} productos registrados en el catálogo
+          </p>
+        </div>
+        <div className="flex flex-wrap items-center gap-3">
+          <Button
+            onClick={handleExport}
+            disabled={isExporting || isLoading}
+            variant="outline"
+            className="border-emerald-600/30 text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800 gap-2 font-semibold shadow-sm cursor-pointer"
+          >
+            <FileSpreadsheet className="h-4 w-4 text-emerald-600" />
+            {isExporting ? "Generando Excel..." : "Exportar Catálogo a Excel"}
+          </Button>
+
+          <Button onClick={handleCreate} className="bg-[var(--brand)] hover:bg-[var(--brand)]/90 gap-2 font-semibold shadow-sm cursor-pointer">
+            <Plus className="h-4 w-4" />
+            Nuevo Producto
+          </Button>
+        </div>
       </div>
 
       <div className="mb-6 flex items-center rounded-lg border border-border bg-background px-3">
@@ -94,14 +129,13 @@ function AdminProducts() {
                   <th className="px-6 py-4 font-medium">Producto</th>
                   <th className="px-6 py-4 font-medium">Categoría</th>
                   <th className="px-6 py-4 font-medium">Marca</th>
-                  <th className="px-6 py-4 font-medium text-right">Precio Base</th>
                   <th className="px-6 py-4 font-medium text-right">Acciones</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
                 {filteredProducts.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="px-6 py-8 text-center text-muted-foreground">
+                    <td colSpan={4} className="px-6 py-8 text-center text-muted-foreground">
                       No se encontraron productos.
                     </td>
                   </tr>
@@ -112,7 +146,7 @@ function AdminProducts() {
                         {product.name}
                         {product.variants && product.variants.length > 0 && (
                           <div className="mt-1 text-xs text-muted-foreground">
-                            {product.variants.length} variante(s)
+                            {product.variants.map((v: any) => v.name).join(", ")}
                           </div>
                         )}
                       </td>
@@ -120,9 +154,6 @@ function AdminProducts() {
                         {product.category}
                       </td>
                       <td className="px-6 py-4">{product.brand || "-"}</td>
-                      <td className="px-6 py-4 text-right font-semibold">
-                        {formatARS(product.price)}
-                      </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center justify-end gap-2">
                           <button

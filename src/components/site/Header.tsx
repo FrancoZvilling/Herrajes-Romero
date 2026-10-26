@@ -39,7 +39,7 @@ export function Header() {
             onMouseEnter={() => setCatOpen(true)}
             onMouseLeave={() => setCatOpen(false)}
           >
-            <button className="flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium text-foreground/80 transition hover:bg-[var(--surface-muted)] hover:text-foreground">
+            <button className="flex cursor-pointer items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium text-foreground/80 transition hover:bg-[var(--surface-muted)] hover:text-foreground">
               Catálogo
               <span className="ml-1 rounded bg-[var(--brand)]/10 px-1.5 py-0.5 text-[10px] font-semibold text-[var(--brand)]">
                 {categories.length}
@@ -85,14 +85,14 @@ export function Header() {
           <button
             onClick={() => setSearchOpen(true)}
             aria-label="Buscar"
-            className="inline-flex h-10 w-10 items-center justify-center rounded-md text-foreground/70 transition hover:bg-[var(--surface-muted)] hover:text-foreground"
+            className="inline-flex h-10 w-10 cursor-pointer items-center justify-center rounded-md text-foreground/70 transition hover:bg-[var(--surface-muted)] hover:text-foreground"
           >
             <Search className="h-5 w-5" />
           </button>
           <button
             onClick={() => setOpen(true)}
             aria-label="Carrito"
-            className="relative inline-flex h-10 w-10 items-center justify-center rounded-md text-foreground/80 transition hover:bg-[var(--surface-muted)] hover:text-foreground"
+            className="relative inline-flex h-10 w-10 cursor-pointer items-center justify-center rounded-md text-foreground/80 transition hover:bg-[var(--surface-muted)] hover:text-foreground"
           >
             <ShoppingBag className="h-5 w-5" />
             <AnimatePresence>
@@ -109,13 +109,13 @@ export function Header() {
               )}
             </AnimatePresence>
           </button>
-          <Button asChild size="sm" className="ml-1 hidden bg-[var(--brand)] text-white hover:bg-[var(--brand)]/90 lg:inline-flex">
+          <Button asChild size="sm" className="ml-1 hidden bg-[var(--brand)] text-white hover:bg-[var(--brand)]/90 lg:inline-flex cursor-pointer">
             <a href="https://wa.me/5493517010095" target="_blank" rel="noreferrer">
               WhatsApp
             </a>
           </Button>
           <button
-            className="ml-1 inline-flex h-10 w-10 items-center justify-center rounded-md text-foreground/80 hover:bg-[var(--surface-muted)] lg:hidden"
+            className="ml-1 inline-flex h-10 w-10 cursor-pointer items-center justify-center rounded-md text-foreground/80 hover:bg-[var(--surface-muted)] lg:hidden"
             onClick={() => setMobileOpen((v) => !v)}
             aria-label="Menú"
           >

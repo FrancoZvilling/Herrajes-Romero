@@ -1,9 +1,9 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { ChevronRight, Minus, Plus, ShieldCheck, ShoppingBag, Truck, Wrench } from "lucide-react";
 import { useProductsByCategory, useCategories } from "@/hooks/useCatalog";
-import { formatARS, useCart } from "@/context/cart";
+import { useCart } from "@/context/cart";
 import { ProductCard } from "@/components/site/ProductCard";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
@@ -48,21 +48,6 @@ function ProductPage() {
   });
 
   const [observation, setObservation] = useState("");
-
-  const currentPrice = useMemo(() => {
-    let price = product.price;
-    if (product.variants) {
-      for (const v of product.variants) {
-        const selectedVal = variants[v.name];
-        const opt = v.options.find(o => o.value === selectedVal);
-        if (opt && opt.price !== undefined && opt.price !== null) {
-          price = opt.price;
-          break; // First one wins
-        }
-      }
-    }
-    return price;
-  }, [product, variants]);
 
   const { data: categoryProducts = [] } = useProductsByCategory(product.category);
   const related = categoryProducts.filter((p) => p.id !== product.id).slice(0, 4);
@@ -119,9 +104,10 @@ function ProductPage() {
           </h1>
           <p className="mt-4 text-muted-foreground">{product.description}</p>
 
-          <div className="mt-6 flex items-baseline gap-3">
-            <span className="font-display text-4xl font-bold">{formatARS(currentPrice)}</span>
-            <span className="text-sm text-muted-foreground">IVA incluido</span>
+          <div className="mt-6 inline-flex items-center gap-2 rounded-lg border border-[var(--brand)]/20 bg-[var(--brand)]/5 px-4 py-2.5 text-sm text-[var(--brand)]">
+            <span className="h-2 w-2 rounded-full bg-[var(--brand)] animate-pulse" />
+            <span className="font-semibold">Precio a cotizar</span>
+            <span className="text-muted-foreground">· Consultá presupuestos y stock</span>
           </div>
 
           {product.variants && product.variants.length > 0 && (
@@ -186,13 +172,13 @@ function ProductPage() {
             </div>
             <button
               onClick={() => {
-                add({ ...product, price: currentPrice }, variants, qty, observation);
+                add(product, variants, qty, observation);
                 setObservation("");
               }}
               className="inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-lg bg-[var(--brand)] px-6 text-sm font-semibold text-white shadow-[var(--shadow-brand)] transition hover:brightness-110 active:scale-[0.98]"
             >
               <ShoppingBag className="h-4 w-4" />
-              Agregar al carrito
+              Agregar al pedido
             </button>
           </div>
 

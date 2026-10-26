@@ -120,6 +120,13 @@
     border-color: var(--color-border);
   }
 
+  button:not(:disabled),
+  [role="button"]:not(:disabled),
+  select,
+  summary {
+    cursor: pointer;
+  }
+
   html {
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;

@@ -1,18 +1,46 @@
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { useCart, formatARS } from "@/context/cart";
-import { Button } from "@/components/ui/button";
-import { Minus, Plus, ShoppingBag, Trash2 } from "lucide-react";
+import { useCart } from "@/context/cart";
+import { Minus, Plus, ShoppingBag, Trash2, MessageCircle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Link } from "@tanstack/react-router";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 
 export function CartDrawer() {
-  const { isOpen, setOpen, items, remove, updateQty, total, clear } = useCart();
+  const { isOpen, setOpen, items, remove, updateQty, clear } = useCart();
 
   const waMsg = encodeURIComponent(
-    "Hola Casa Romero! Me interesa este pedido:\n\n" +
-      items.map((i) => `• ${i.name} (${i.variantLabel || "-"}) x${i.qty} — ${formatARS(i.price * i.qty)}`).join("\n") +
-      `\n\nTotal: ${formatARS(total)}`,
+    "¡Hola Casa Romero! Quiero solicitar cotización por el siguiente pedido:\n\n" +
+      items
+        .map((i) => {
+          let line = `• ${i.qty}x ${i.name}`;
+          if (i.variantLabel) line += ` (${i.variantLabel})`;
+          if (i.observation) line += `\n  Aclaración: ${i.observation}`;
+          return line;
+        })
+        .join("\n") +
+      "\n\n¿Me confirmarían cotización y disponibilidad? ¡Muchas gracias!"
   );
+
+  const whatsappUrl = `https://wa.me/5493517010095?text=${waMsg}`;
+
+  const handleSendWhatsApp = () => {
+    // Registrar consulta en Firestore para el panel de administración
+    try {
+      addDoc(collection(db, "orders"), {
+        customer: {
+          nombre: "Consulta directa por WhatsApp",
+          apellido: "",
+          metodoEnvio: "A coordinar por WhatsApp",
+        },
+        items: items,
+        status: "pendiente",
+        createdAt: serverTimestamp(),
+      });
+    } catch (e) {
+      console.error("Error registrando pedido:", e);
+    }
+    setOpen(false);
+  };
 
   return (
     <Sheet open={isOpen} onOpenChange={setOpen}>
@@ -20,7 +48,7 @@ export function CartDrawer() {
         <SheetHeader className="border-b border-border">
           <SheetTitle className="flex items-center gap-2">
             <ShoppingBag className="h-5 w-5 text-[var(--brand)]" />
-            Tu carrito
+            Tu Pedido ({items.reduce((s, i) => s + i.qty, 0)} productos)
           </SheetTitle>
         </SheetHeader>
 
@@ -30,9 +58,9 @@ export function CartDrawer() {
               <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[var(--surface-muted)]">
                 <ShoppingBag className="h-7 w-7 text-muted-foreground" />
               </div>
-              <p className="font-display text-lg font-semibold">Tu carrito está vacío</p>
+              <p className="font-display text-lg font-semibold">Tu pedido está vacío</p>
               <p className="mt-1 text-sm text-muted-foreground">
-                Explorá el catálogo y sumá productos.
+                Explorá el catálogo y sumá los productos que necesitás cotizar.
               </p>
             </div>
           ) : (
@@ -53,8 +81,13 @@ export function CartDrawer() {
                         {i.variantLabel && (
                           <p className="mt-0.5 text-xs text-muted-foreground">{i.variantLabel}</p>
                         )}
-                        <p className="mt-1 text-sm font-bold text-[var(--brand)]">
-                          {formatARS(i.price * i.qty)}
+                        {i.observation && (
+                          <p className="mt-1 text-xs font-medium text-[var(--brand)]">
+                            Obs: {i.observation}
+                          </p>
+                        )}
+                        <p className="mt-1 text-xs font-semibold text-muted-foreground">
+                          Cantidad: <span className="text-foreground">{i.qty}</span>
                         </p>
                       </div>
                       <button
@@ -65,7 +98,7 @@ export function CartDrawer() {
                         <Trash2 className="h-4 w-4" />
                       </button>
                     </div>
-                    <div className="mt-2 inline-flex items-center rounded-md border border-border">
+                    <div className="mt-3 inline-flex items-center rounded-md border border-border">
                       <button
                         onClick={() => updateQty(i.productId, i.variantKey, i.qty - 1)}
                         className="flex h-8 w-8 items-center justify-center transition hover:bg-[var(--surface-muted)]"
@@ -88,23 +121,27 @@ export function CartDrawer() {
         </div>
 
         {items.length > 0 && (
-          <div className="border-t border-border bg-[var(--surface)] p-4">
-            <div className="mb-3 flex items-baseline justify-between">
-              <span className="text-sm text-muted-foreground">Total estimado</span>
-              <span className="font-display text-2xl font-bold text-foreground">
-                {formatARS(total)}
-              </span>
+          <div className="border-t border-border bg-[var(--surface)] p-4 space-y-3">
+            <div className="rounded-lg border border-[var(--brand)]/20 bg-[var(--brand)]/5 p-3 text-xs text-muted-foreground">
+              💬 <strong>Cotización directa:</strong> Al tocar el botón se abrirá WhatsApp con la lista de productos para coordinar precio, disponibilidad y entrega.
             </div>
-            <Button asChild className="h-11 w-full bg-[var(--brand)] text-white hover:bg-[var(--brand)]/90" onClick={() => setOpen(false)}>
-              <Link to="/checkout">
-                Iniciar Compra
-              </Link>
-            </Button>
+
+            <a
+              href={whatsappUrl}
+              target="_blank"
+              rel="noreferrer"
+              onClick={handleSendWhatsApp}
+              className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#25D366] text-sm font-bold text-white shadow-md transition hover:bg-[#20bd5a] hover:scale-[1.01] active:scale-[0.99]"
+            >
+              <MessageCircle className="h-5 w-5" />
+              Enviar Pedido por WhatsApp
+            </a>
+
             <button
               onClick={clear}
-              className="mt-2 w-full text-center text-xs text-muted-foreground hover:text-destructive"
+              className="mt-1 w-full text-center text-xs text-muted-foreground hover:text-destructive"
             >
-              Vaciar carrito
+              Vaciar pedido
             </button>
           </div>
         )}

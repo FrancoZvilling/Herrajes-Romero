@@ -15,7 +15,6 @@ export function ProductFormModal({ product, onClose }: { product: any; onClose: 
   
   const [name, setName] = useState(product?.name || "");
   const [description, setDescription] = useState(product?.description || "");
-  const [price, setPrice] = useState(product?.price?.toString() || "");
   const [category, setCategory] = useState(product?.category || "");
   const [subcategory, setSubcategory] = useState(product?.subcategory || "");
   const [brand, setBrand] = useState(product?.brand || "");
@@ -23,8 +22,8 @@ export function ProductFormModal({ product, onClose }: { product: any; onClose: 
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>(product?.imageUrl || "");
 
-  // Variants state: array of { name: "Medida", options: { value: "10mm", price?: number }[] }
-  const [variants, setVariants] = useState<{name: string; options: {value: string, price?: number}[]}[]>(
+  // Variants state: array of { name: "Medida", options: { value: "10mm" }[] }
+  const [variants, setVariants] = useState<{name: string; options: {value: string}[]}[]>(
     product?.variants || []
   );
 
@@ -91,7 +90,7 @@ export function ProductFormModal({ product, onClose }: { product: any; onClose: 
       const productData = {
         name,
         description,
-        price: parseFloat(price) || 0,
+        price: product?.price || 0,
         category,
         subcategory: subcategory || null,
         brand,
@@ -122,25 +121,12 @@ export function ProductFormModal({ product, onClose }: { product: any; onClose: 
 
         <form onSubmit={handleSubmit} className="space-y-6 pt-4">
           <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
+            <div className="space-y-2 sm:col-span-2">
               <Label htmlFor="name">Nombre del Producto</Label>
               <Input
                 id="name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                required
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="price">Precio Base (ARS)</Label>
-              <Input
-                id="price"
-                type="number"
-                min="0"
-                step="0.01"
-                value={price}
-                onChange={(e) => setPrice(e.target.value)}
                 required
               />
             </div>
@@ -267,62 +253,21 @@ export function ProductFormModal({ product, onClose }: { product: any; onClose: 
 
                   <div>
                     <Label className="text-xs uppercase tracking-widest text-muted-foreground mb-2 block">Opciones</Label>
-                    <div className="flex flex-col gap-3 mb-4">
+                    <div className="flex flex-col gap-2 mb-4">
                       {variant.options.map((opt, oIdx) => (
-                        <div key={oIdx} className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-lg bg-[var(--surface-muted)] p-3">
-                          <div className="flex items-center gap-3 flex-1">
-                            <Input 
-                              value={opt.value}
-                              onChange={(e) => {
-                                const updated = [...variants];
-                                updated[vIdx].options[oIdx].value = e.target.value;
-                                setVariants(updated);
-                              }}
-                              className="h-8 font-semibold"
-                            />
-                          </div>
-                          
-                          <div className="flex items-center gap-4">
-                            <label className="flex items-center gap-2 text-sm text-muted-foreground cursor-pointer">
-                              <input 
-                                type="checkbox"
-                                checked={opt.price === undefined || opt.price === null}
-                                onChange={(e) => {
-                                  const updated = [...variants];
-                                  if (e.target.checked) {
-                                    delete updated[vIdx].options[oIdx].price;
-                                  } else {
-                                    updated[vIdx].options[oIdx].price = parseFloat(price) || 0;
-                                  }
-                                  setVariants(updated);
-                                }}
-                                className="rounded border-input text-[var(--brand)] focus:ring-[var(--brand)] h-4 w-4"
-                              />
-                              Mismo precio que base
-                            </label>
-                            
-                            {opt.price !== undefined && opt.price !== null && (
-                              <div className="flex items-center gap-2">
-                                <span className="text-sm font-medium">$</span>
-                                <Input 
-                                  type="number"
-                                  min="0"
-                                  step="0.01"
-                                  value={opt.price}
-                                  onChange={(e) => {
-                                    const updated = [...variants];
-                                    updated[vIdx].options[oIdx].price = parseFloat(e.target.value) || 0;
-                                    setVariants(updated);
-                                  }}
-                                  className="h-8 w-24 bg-background"
-                                />
-                              </div>
-                            )}
-
-                            <button type="button" onClick={() => handleRemoveOption(vIdx, oIdx)} className="text-muted-foreground hover:text-destructive p-1">
-                              <Trash2 className="h-4 w-4" />
-                            </button>
-                          </div>
+                        <div key={oIdx} className="flex items-center justify-between gap-3 rounded-lg bg-[var(--surface-muted)] p-2 px-3">
+                          <Input 
+                            value={opt.value}
+                            onChange={(e) => {
+                              const updated = [...variants];
+                              updated[vIdx].options[oIdx].value = e.target.value;
+                              setVariants(updated);
+                            }}
+                            className="h-8 font-semibold flex-1"
+                          />
+                          <button type="button" onClick={() => handleRemoveOption(vIdx, oIdx)} className="text-muted-foreground hover:text-destructive p-1">
+                            <Trash2 className="h-4 w-4" />
+                          </button>
                         </div>
                       ))}
                     </div>

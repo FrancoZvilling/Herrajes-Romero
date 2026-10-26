@@ -10,7 +10,6 @@ import {
 } from "@/components/ui/command";
 import { useProducts } from "@/hooks/useCatalog";
 import { useNavigate } from "@tanstack/react-router";
-import { formatARS } from "@/context/cart";
 
 function normalizeString(str: string) {
   if (!str) return "";
@@ -78,8 +77,8 @@ export function SiteSearch({ open, onOpenChange }: SiteSearchProps) {
                         </span>
                       )}
                     </div>
-                    <span className="text-sm font-bold text-[var(--brand)] group-data-[selected=true]:text-white">
-                      {formatARS(product.price)}
+                    <span className="text-xs font-semibold text-[var(--brand)] group-data-[selected=true]:text-white">
+                      Ver detalle
                     </span>
                   </CommandItem>
                 ))}

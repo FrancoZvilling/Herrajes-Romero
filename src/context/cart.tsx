@@ -4,7 +4,7 @@ import type { Product } from "@/data/catalog";
 export type CartItem = {
   productId: string;
   name: string;
-  price: number;
+  price?: number;
   qty: number;
   variantKey: string; // "Material:Bronce|Medida:30cm"
   variantLabel: string;

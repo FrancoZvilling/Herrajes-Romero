@@ -1,7 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useOrders, useProducts } from "@/hooks/useCatalog";
-import { DollarSign, Package, TrendingUp, TrendingDown } from "lucide-react";
-import { formatARS } from "@/context/cart";
+import { ShoppingCart, Package, TrendingUp, Calendar } from "lucide-react";
 import { useMemo } from "react";
 
 export const Route = createFileRoute("/admin/")({
@@ -17,34 +16,31 @@ function AdminDashboard() {
     const currentMonth = now.getMonth();
     const currentYear = now.getFullYear();
 
-    let ingresosMes = 0;
-    const salesByProduct: Record<string, { name: string; quantity: number }> = {};
+    let pedidosMes = 0;
+    const requestedByProduct: Record<string, { name: string; quantity: number }> = {};
 
     orders.forEach((order: any) => {
-      // Only count approved orders for dashboard metrics
-      if (order.status !== "approved") return;
+      // Don't count archived orders
+      if (order.archived) return;
 
-      // Assuming order has createdAt (Timestamp) or date string
-      // Let's fallback to current month if not properly set (just for mockup if no date)
       const date = order.createdAt?.toDate ? order.createdAt.toDate() : new Date(order.createdAt || Date.now());
       if (date.getMonth() === currentMonth && date.getFullYear() === currentYear) {
-        ingresosMes += order.total || 0;
+        pedidosMes++;
       }
 
-      // Track product sales
+      // Track product requests
       order.items?.forEach((item: any) => {
-        if (!salesByProduct[item.productId]) {
-          salesByProduct[item.productId] = { name: item.name, quantity: 0 };
+        if (!requestedByProduct[item.productId || item.name]) {
+          requestedByProduct[item.productId || item.name] = { name: item.name, quantity: 0 };
         }
-        salesByProduct[item.productId].quantity += item.qty;
+        requestedByProduct[item.productId || item.name].quantity += item.qty || 1;
       });
     });
 
-    const sortedSales = Object.values(salesByProduct).sort((a, b) => b.quantity - a.quantity);
-    const topProduct = sortedSales.length > 0 ? sortedSales[0] : null;
-    const bottomProduct = sortedSales.length > 0 ? sortedSales[sortedSales.length - 1] : null;
+    const sortedRequests = Object.values(requestedByProduct).sort((a, b) => b.quantity - a.quantity);
+    const topProduct = sortedRequests.length > 0 ? sortedRequests[0] : null;
 
-    return { ingresosMes, topProduct, bottomProduct };
+    return { pedidosMes, totalPedidos: orders.filter(o => !o.archived).length, topProduct };
   }, [orders]);
 
   if (isLoadingOrders || isLoadingProducts) {
@@ -53,17 +49,17 @@ function AdminDashboard() {
 
   return (
     <div>
-      <h1 className="mb-8 font-display text-3xl font-bold tracking-tight">Dashboard</h1>
+      <h1 className="mb-8 font-display text-3xl font-bold tracking-tight">Dashboard del Catálogo</h1>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-        {/* Ingresos del mes */}
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {/* Pedidos del mes */}
         <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
           <div className="flex items-center justify-between text-muted-foreground">
-            <span className="text-sm font-medium">Ingresos del Mes</span>
-            <DollarSign className="h-5 w-5 text-[var(--brand)]" />
+            <span className="text-sm font-medium">Pedidos este Mes</span>
+            <Calendar className="h-5 w-5 text-[var(--brand)]" />
           </div>
           <div className="mt-4 font-display text-3xl font-bold text-foreground">
-            {formatARS(metrics.ingresosMes)}
+            {metrics.pedidosMes} <span className="text-base font-medium text-muted-foreground">solicitudes</span>
           </div>
         </div>
 
@@ -78,10 +74,10 @@ function AdminDashboard() {
           </div>
         </div>
 
-        {/* Producto más vendido */}
+        {/* Producto más pedido */}
         <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
           <div className="flex items-center justify-between text-muted-foreground">
-            <span className="text-sm font-medium">Más Vendido</span>
+            <span className="text-sm font-medium">Más Consultado</span>
             <TrendingUp className="h-5 w-5 text-green-500" />
           </div>
           <div className="mt-4">
@@ -89,23 +85,7 @@ function AdminDashboard() {
               {metrics.topProduct ? metrics.topProduct.name : "Sin datos"}
             </div>
             <div className="mt-1 text-sm text-muted-foreground">
-              {metrics.topProduct ? `${metrics.topProduct.quantity} unidades vendidas` : "-"}
-            </div>
-          </div>
-        </div>
-
-        {/* Producto menos vendido */}
-        <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
-          <div className="flex items-center justify-between text-muted-foreground">
-            <span className="text-sm font-medium">Menos Vendido</span>
-            <TrendingDown className="h-5 w-5 text-red-500" />
-          </div>
-          <div className="mt-4">
-            <div className="line-clamp-1 font-display text-xl font-bold text-foreground">
-              {metrics.bottomProduct ? metrics.bottomProduct.name : "Sin datos"}
-            </div>
-            <div className="mt-1 text-sm text-muted-foreground">
-              {metrics.bottomProduct ? `${metrics.bottomProduct.quantity} unidades vendidas` : "-"}
+              {metrics.topProduct ? `${metrics.topProduct.quantity} unidades pedidas` : "-"}
             </div>
           </div>
         </div>

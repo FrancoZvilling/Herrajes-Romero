@@ -103,9 +103,8 @@ export function Footer() {
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <span className="text-white/40">Aceptamos:</span>
-            {["VISA", "MasterCard", "Naranja", "Mercado Pago"].map((m) => (
-              <span key={m} className="rounded border border-white/10 bg-white/5 px-2 py-1 font-semibold text-white/70">
+            {["Catálogo Oficial", "Cotizaciones por WhatsApp", "Envíos a todo el país"].map((m) => (
+              <span key={m} className="rounded border border-white/10 bg-white/5 px-2.5 py-1 text-xs font-semibold text-white/70">
                 {m}
               </span>
             ))}

@@ -51,10 +51,9 @@ function AdminLayout() {
 
   const menuItems = [
     { name: "Dashboard", path: "/admin", icon: <LayoutDashboard className="h-5 w-5" /> },
-    { name: "Órdenes", path: "/admin/orders", icon: <ShoppingCart className="h-5 w-5" /> },
+    { name: "Pedidos y Cotizaciones", path: "/admin/orders", icon: <ShoppingCart className="h-5 w-5" /> },
     { name: "Productos", path: "/admin/products", icon: <Package className="h-5 w-5" /> },
     { name: "Categorías", path: "/admin/categories", icon: <Tags className="h-5 w-5" /> },
-    { name: "Precios Masivos", path: "/admin/bulk-prices", icon: <DollarSign className="h-5 w-5" /> },
   ];
 
   const Sidebar = () => (
